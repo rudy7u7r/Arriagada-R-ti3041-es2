@@ -8,15 +8,60 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <style>
-        body { background-color: #0f141a; color: #e1e6eb; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        
-        /* Banner Animado Mordekaiser */
+        /* ===== PALETA GLOBAL: REINO DEL HIERRO (VERDE ESPECTRAL & ACERO) ===== */
+        :root {
+            --morde-verde-brillante: #00ff87;
+            --morde-verde-fuego: #00b359;
+            --morde-verde-oscuro: #004d28;
+            --morde-fondo-principal: #0a0f14;
+            --morde-card-fondo: #121921;
+            --morde-borde-card: #1f2d3d;
+        }
+
+        body { 
+            background-color: var(--morde-fondo-principal); 
+            color: #e1e6eb; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+        }
+
+        /* ===== NAVBAR TEMÁTICO CON ANIMACIÓN DE FUEGO VERDE ===== */
+        .navbar-mordekaiser {
+            position: relative;
+            background-color: #0d131a !important;
+            border-bottom: 2px solid var(--morde-verde-brillante);
+            box-shadow: 0 4px 20px rgba(0, 255, 135, 0.15);
+        }
+
+        /* Fuego/Resplandor animado en el borde inferior de la barra */
+        .navbar-mordekaiser::after {
+            content: '';
+            position: absolute;
+            bottom: -3px;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, #00ff87, #00b359, #00ff87, transparent);
+            background-size: 200% 100%;
+            animation: fuegoVerdeNavbar 3s linear infinite;
+        }
+
+        @keyframes fuegoVerdeNavbar {
+            0% { background-position: 0% 0%; }
+            100% { background-position: 200% 0%; }
+        }
+
+        .texto-espectral {
+            color: var(--morde-verde-brillante) !important;
+            text-shadow: 0 0 10px rgba(0, 255, 135, 0.5);
+        }
+
+        /* ===== BANNER ANIMADO DE MORDEKAISER ===== */
         .mordekaiser-banner {
             position: relative;
             width: 100%;
             height: 380px;
             background: url('https://media1.tenor.com/m/UPaZM9tFpG4AAAAd/mordekaiser-league-of-legends.gif') center/cover no-repeat;
-            border-bottom: 3px solid #00e5ff;
+            border-bottom: 3px solid var(--morde-verde-brillante);
             overflow: hidden;
         }
 
@@ -26,67 +71,154 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: radial-gradient(circle, rgba(15,20,26,0.3) 0%, rgba(15,20,26,0.85) 100%);
+            background: radial-gradient(circle, rgba(10,15,20,0.3) 0%, rgba(10,15,20,0.9) 100%);
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             padding: 20px;
-            text-shadow: 2px 2px 10px #000;
+            text-shadow: 2px 2px 12px #000;
         }
 
         .mordekaiser-title { 
             font-weight: 800; 
             letter-spacing: 3px; 
-            color: #00e5ff; 
+            color: var(--morde-verde-brillante); 
             text-transform: uppercase; 
+            text-shadow: 0 0 15px rgba(0, 255, 135, 0.6);
         }
-        
-        /* Estilos de Cards */
+
+        /* ===== TARJETAS Y EFECTO DE LLAMA VERDE EN HOVER ===== */
         .card-producto {
-            background-color: #1a222d;
-            border: 1px solid #2d3b4e;
-            transition: transform 0.2s, border-color 0.2s;
+            position: relative;
+            background-color: var(--morde-card-fondo);
+            border: 2px solid var(--morde-borde-card);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
         }
-        .card-producto:hover { transform: translateY(-5px); border-color: #00e5ff; }
-        .badge-categoria { background-color: #004d40; color: #80cbc4; }
-        .price-tag { font-size: 1.3rem; font-weight: bold; color: #26a69a; }
-        .btn-morde { background-color: #00695c; color: white; border: none; }
-        .btn-morde:hover { background-color: #00897b; color: white; }
+
+        .card-producto::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 10%;
+            width: 80%;
+            height: 8px;
+            background: radial-gradient(circle, #00ff87 0%, #00b359 50%, transparent 100%);
+            border-radius: 50%;
+            opacity: 0;
+            filter: blur(6px);
+            transition: opacity 0.3s ease, filter 0.3s ease, transform 0.3s ease;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .card-producto:hover {
+            transform: translateY(-8px);
+            border-color: var(--morde-verde-brillante);
+            box-shadow: 0 12px 25px -5px rgba(0, 255, 135, 0.4), 
+                        0 0 15px rgba(0, 255, 135, 0.2);
+        }
+
+        .card-producto:hover::after {
+            opacity: 1;
+            filter: blur(4px);
+            transform: scaleX(1.3);
+        }
+
+        /* COMPONENTES SECUNDARIOS */
+        .badge-categoria { background-color: var(--morde-verde-oscuro); color: var(--morde-verde-brillante); border: 1px solid var(--morde-verde-fuego); }
+        .price-tag { font-size: 1.3rem; font-weight: bold; color: var(--morde-verde-brillante); }
+        
+        .btn-morde { 
+            background-color: var(--morde-verde-oscuro); 
+            color: var(--morde-verde-brillante); 
+            border: 1px solid var(--morde-verde-fuego); 
+            transition: all 0.2s; 
+        }
+        .btn-morde:hover { 
+            background-color: var(--morde-verde-brillante); 
+            color: #0a0f14; 
+            font-weight: bold;
+            box-shadow: 0 0 10px rgba(0, 255, 135, 0.8);
+        }
+
+        .btn-espectral-outline {
+            color: var(--morde-verde-brillante);
+            border-color: var(--morde-verde-brillante);
+        }
+        .btn-espectral-outline:hover {
+            background-color: var(--morde-verde-brillante);
+            color: #0a0f14;
+            font-weight: bold;
+        }
+
+        /* APARTADO CONTENEDOR PARA TU PNG EN EL NAVBAR */
+        .contenedor-png-personalizado {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 45px;
+            margin-left: 10px;
+        }
+        .png-personalizado {
+            max-height: 100%;
+            width: auto;
+            object-fit: contain;
+            filter: drop-shadow(0 0 5px rgba(0, 255, 135, 0.6));
+        }
     </style>
 </head>
 <body>
 
-    <!-- Header Navbar -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top border-bottom border-secondary">
-    <div class="container">
-        <a class="navbar-brand text-info fw-bold" href="{% url 'lista_productos' %}">
-            <i class="bi bi-hammer me-2"></i>La Ferretería Mordekaiser
-        </a>
-        <div class="d-flex ms-auto align-items-center gap-3">
-            {% if user.is_authenticated %}
-                <span class="text-light small"><i class="bi bi-person-circle text-info me-1"></i>{{ user.username }}</span>
-                <a href="{% url 'ver_carrito' %}" class="btn btn-outline-info position-relative btn-sm">
-                    <i class="bi bi-cart3 me-1"></i> Carrito
-                    {% if total_items_carrito > 0 %}
-                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                        {{ total_items_carrito }}
-                    </span>
-                    {% endif %}
-                </a>
-                <a href="{% url 'logout' %}" class="btn btn-outline-danger btn-sm"><i class="bi bi-box-arrow-right"></i> Salir</a>
-            {% else %}
-                <a href="{% url 'login' %}" class="btn btn-outline-info btn-sm">Iniciar Sesión</a>
-                <a href="{% url 'register' %}" class="btn btn-info btn-sm text-dark fw-bold">Registrarse</a>
-            {% endif %}
+    <!-- Header Navbar Re-diseñado con Fuego Verde -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-mordekaiser sticky-top">
+        <div class="container">
+           <a class="navbar-brand texto-espectral fw-bold fs-4 d-flex align-items-center" href="{% url 'lista_productos' %}">
+    <!-- IMAGEN PNG A LA IZQUIERDA DEL TÍTULO -->
+    <img src="{https://cmsassets.rgpub.io/sanity/images/dsfx7636/news/abb202d7e8349ee4cc510cedeadfea39c4c0e641-500x500.jpg?accountingTag=WR}" 
+         alt="Icono Mordekaiser" 
+         style="height: 35px; width: auto; margin-right: 10px; filter: drop-shadow(0 0 6px rgba(0, 255, 135, 0.8));"
+         onerror="this.src='https://cmsassets.rgpub.io/sanity/images/dsfx7636/news/abb202d7e8349ee4cc510cedeadfea39c4c0e641-500x500.jpg?accountingTag=WR'">
+    <span>La Ferretería Mordekaiser</span>
+</a>
+
+            <div class="d-flex ms-auto align-items-center gap-3">
+                {% if user.is_authenticated %}
+                    <span class="text-light small"><i class="bi bi-person-circle texto-espectral me-1"></i>{{ user.username }}</span>
+                    <a href="{% url 'ver_carrito' %}" class="btn btn-espectral-outline position-relative btn-sm">
+                        <i class="bi bi-cart3 me-1"></i> Carrito
+                        {% if total_items_carrito > 0 %}
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                            {{ total_items_carrito }}
+                        </span>
+                        {% endif %}
+                    </a>
+                    <a href="{% url 'logout' %}" class="btn btn-outline-danger btn-sm"><i class="bi bi-box-arrow-right"></i> Salir</a>
+                {% else %}
+                    <a href="{% url 'login' %}" class="btn btn-espectral-outline btn-sm">Iniciar Sesión</a>
+                    <a href="{% url 'register' %}" class="btn btn-morde btn-sm fw-bold">Registrarse</a>
+                {% endif %}
+
+                <!-- =================================================================== -->
+                <!-- CONTENEDOR PARA TU PNG PERSONALIZADO EN EL LADO DERECHO DEL NAVBAR  -->
+                <!-- =================================================================== -->
+                <div class="contenedor-png-personalizado">
+                    <!-- Reemplaza el enlace src con la ruta a tu archivo PNG -->
+                    <img src="https://cmsassets.rgpub.io/sanity/images/dsfx7636/news/abb202d7e8349ee4cc510cedeadfea39c4c0e641-500x500.jpg?accountingTag=WR" 
+                         alt="Icono Personalizado" 
+                         class="png-personalizado" 
+                         id="imagen-png-derecha">
+                </div>
+            </div>
         </div>
-    </div>
-</nav>
+    </nav>
 
     <!-- Banner Animado de Mordekaiser -->
     <div class="mordekaiser-banner text-center mb-4">
         <div class="mordekaiser-overlay">
-            <h1 class="display-3 mordekaiser-title">Iron Stands Eternal</h1>
+            <h1 class="display-3 mordekaiser-title">El Hierro Perdurará</h1>
             <p class="fs-4 text-light">Equípate con el mejor acero para dominar tus proyectos.</p>
         </div>
     </div>
@@ -121,29 +253,31 @@
                     </select>
                 </div>
                 <div class="col-md-3 d-flex gap-2">
-                    <button type="submit" class="btn btn-info w-100"><i class="bi bi-funnel"></i> Filtrar</button>
+                    <button type="submit" class="btn btn-morde w-100"><i class="bi bi-funnel"></i> Filtrar</button>
                     <a href="{% url 'lista_productos' %}" class="btn btn-outline-secondary"><i class="bi bi-arrow-counterclockwise"></i></a>
                 </div>
             </form>
         </div>
 
-        <!-- Grilla de Productos -->
+        <!-- Grilla de Productos con Verde Espectral -->
         <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-4 mb-5">
             {% for producto in productos %}
             <div class="col">
-                <div class="card h-100 card-producto shadow-sm">
-                    <!-- IMAGEN DEL PRODUCTO -->
-            <img src="{% static producto.imagen %}" 
-                 class="card-img-top p-2" 
-                 alt="{{ producto.nombre }}" 
-                 style="height: 180px; object-fit: contain; background-color: #111822;"
-                 onerror="this.src='https://via.placeholder.com/300x180/1a222d/00e5ff?text=Ferreteria+Mordekaiser'">
+                <div class="card h-100 card-producto">
+                    
+                    <!-- Imagen del Producto -->
+                    <img src="{% static producto.imagen %}" 
+                         class="card-img-top p-2" 
+                         alt="{{ producto.nombre }}" 
+                         style="height: 180px; object-fit: contain; background-color: #0b1016;"
+                         onerror="this.src='https://via.placeholder.com/300x180/121921/00ff87?text=Ferreteria+Mordekaiser'">
+
                     <div class="card-body d-flex flex-column text-light">
                         <div class="d-flex justify-content-between align-items-start mb-2">
                             <span class="badge badge-categoria">{{ producto.categoria }}</span>
                             <small class="text-muted">ID: #{{ producto.id }}</small>
                         </div>
-                        <h5 class="card-title text-info fw-bold">{{ producto.nombre }}</h5>
+                        <h5 class="card-title texto-espectral fw-bold">{{ producto.nombre }}</h5>
                         
                         <div class="mt-auto pt-3 border-top border-secondary">
                             <div class="d-flex justify-content-between align-items-center mb-3">
