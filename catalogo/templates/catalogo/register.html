@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Registro de Usuario - La Ferretería Mordekaiser</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        body { background-color: #0f141a; color: #e1e6eb; font-family: 'Segoe UI', sans-serif; }
+        .card-custom { background-color: #1a222d; border: 1px solid #00e5ff; }
+    </style>
+</head>
+<body class="d-flex align-items-center vh-100">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-5">
+                <div class="card card-custom p-4 shadow-lg">
+                    <h3 class="text-center text-info fw-bold mb-4"><i class="bi bi-person-plus me-2"></i>Registro de Usuario</h3>
+                    
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} text-center py-2">{{ message }}</div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <form method="POST">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label class="form-label text-info">Nombre de usuario</label>
+                            {{ form.username }}
+                            {% for error in form.username.errors %}
+                                <small class="text-danger d-block mt-1">{{ error }}</small>
+                            {% endfor %}
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-info">Contraseña</label>
+                            {{ form.password }}
+                            {% for error in form.password.errors %}
+                                <small class="text-danger d-block mt-1">{{ error }}</small>
+                            {% endfor %}
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-info">Confirmar contraseña</label>
+                            {{ form.confirm_password }}
+                            {% for error in form.confirm_password.errors %}
+                                <small class="text-danger d-block mt-1">{{ error }}</small>
+                            {% endfor %}
+                        </div>
+                        <button type="submit" class="btn btn-info w-100 fw-bold mt-3 text-dark">Crear Cuenta</button>
+                    </form>
+
+                    <div class="text-center mt-3">
+                        <small>¿Ya tienes una cuenta? <a href="{% url 'login' %}" class="text-info">Inicia sesión aquí</a></small><br>
+                        <small><a href="{% url 'lista_productos' %}" class="text-secondary mt-2 d-inline-block">Volver a la tienda</a></small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
