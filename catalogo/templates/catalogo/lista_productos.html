@@ -3,312 +3,852 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>La Ferretería Mordekaiser</title>
-    <!-- Bootstrap 5 CDN -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <style>
-        /* ===== PALETA GLOBAL: REINO DEL HIERRO (VERDE ESPECTRAL & ACERO) ===== */
         :root {
-            --morde-verde-brillante: #00ff87;
-            --morde-verde-fuego: #00b359;
-            --morde-verde-oscuro: #004d28;
-            --morde-fondo-principal: #0a0f14;
-            --morde-card-fondo: #121921;
-            --morde-borde-card: #1f2d3d;
+            --morde-bg: #0b0908;
+            --morde-bg-2: #17110d;
+            --morde-panel: rgba(20, 15, 11, 0.9);
+            --morde-panel-2: rgba(12, 9, 7, 0.96);
+            --morde-line: rgba(255, 189, 93, 0.22);
+            --morde-green: #f0b36a;
+            --morde-green-2: #d6903d;
+            --morde-green-3: #a75f1e;
+            --morde-emerald: #3d2410;
+            --morde-text: #f6ead9;
+            --morde-muted: #d7c2a2;
+            --morde-gold: #f5d08b;
+            --morde-shadow: rgba(255, 156, 64, 0.24);
         }
 
-        body { 
-            background-color: var(--morde-fondo-principal); 
-            color: #e1e6eb; 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-        }
+        * { box-sizing: border-box; }
 
-        /* ===== NAVBAR TEMÁTICO CON ANIMACIÓN DE FUEGO VERDE ===== */
-        .navbar-mordekaiser {
+        html { scroll-behavior: smooth; }
+
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background:
+                radial-gradient(circle at top, rgba(223, 142, 62, 0.14), transparent 24%),
+                linear-gradient(180deg, #0a0908 0%, #17110d 42%, #0a0908 100%);
+            color: var(--morde-text);
             position: relative;
-            background-color: #0d131a !important;
-            border-bottom: 2px solid var(--morde-verde-brillante);
-            box-shadow: 0 4px 20px rgba(0, 255, 135, 0.15);
+            overflow-x: hidden;
         }
 
-        /* Fuego/Resplandor animado en el borde inferior de la barra */
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px);
+            background-size: 30px 30px;
+            mask-image: radial-gradient(circle at center, black 48%, transparent 100%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        a { text-decoration: none; }
+
+        .page-shell { position: relative; z-index: 1; }
+
+        .navbar-mordekaiser {
+            position: sticky;
+            top: 0;
+            z-index: 40;
+            background: rgba(12, 9, 7, 0.74);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            backdrop-filter: blur(14px);
+            box-shadow: 0 12px 28px rgba(0,0,0,0.18);
+        }
+
         .navbar-mordekaiser::after {
-            content: '';
+            content: "";
             position: absolute;
-            bottom: -3px;
             left: 0;
-            width: 100%;
-            height: 4px;
-            background: linear-gradient(90deg, transparent, #00ff87, #00b359, #00ff87, transparent);
-            background-size: 200% 100%;
-            animation: fuegoVerdeNavbar 3s linear infinite;
+            right: 0;
+            bottom: -2px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--morde-green), var(--morde-green-3), var(--morde-green), transparent);
+            background-size: 220% 100%;
+            animation: glowLine 6s linear infinite;
         }
 
-        @keyframes fuegoVerdeNavbar {
+        @keyframes glowLine {
             0% { background-position: 0% 0%; }
             100% { background-position: 200% 0%; }
         }
 
-        .texto-espectral {
-            color: var(--morde-verde-brillante) !important;
-            text-shadow: 0 0 10px rgba(0, 255, 135, 0.5);
-        }
-
-        /* ===== BANNER ANIMADO DE MORDEKAISER ===== */
-        .mordekaiser-banner {
-            position: relative;
-            width: 100%;
-            height: 380px;
-            background: url('https://media1.tenor.com/m/UPaZM9tFpG4AAAAd/mordekaiser-league-of-legends.gif') center/cover no-repeat;
-            border-bottom: 3px solid var(--morde-verde-brillante);
-            overflow: hidden;
-        }
-
-        .mordekaiser-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle, rgba(10,15,20,0.3) 0%, rgba(10,15,20,0.9) 100%);
+        .brand-wrap {
             display: flex;
-            flex-direction: column;
-            justify-content: center;
             align-items: center;
-            padding: 20px;
-            text-shadow: 2px 2px 12px #000;
+            gap: 0.8rem;
+            color: var(--morde-text);
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            font-size: 0.78rem;
         }
 
-        .mordekaiser-title { 
-            font-weight: 800; 
-            letter-spacing: 3px; 
-            color: var(--morde-verde-brillante); 
-            text-transform: uppercase; 
-            text-shadow: 0 0 15px rgba(0, 255, 135, 0.6);
-        }
-
-        /* ===== TARJETAS Y EFECTO DE LLAMA VERDE EN HOVER ===== */
-        .card-producto {
+        .brand-mark {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #1d120a, #3d2410 40%, #1d120a 100%);
+            border: 1px solid rgba(240,179,106,0.30);
             position: relative;
-            background-color: var(--morde-card-fondo);
-            border: 2px solid var(--morde-borde-card);
-            border-radius: 12px;
-            overflow: hidden;
-            transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: inset 0 0 18px rgba(214, 144, 61, 0.1), 0 0 20px rgba(214, 144, 61, 0.18);
         }
 
-        .card-producto::after {
-            content: '';
+        .brand-mark::before,
+        .brand-mark::after {
+            content: "";
             position: absolute;
-            bottom: 0;
-            left: 10%;
-            width: 80%;
-            height: 8px;
-            background: radial-gradient(circle, #00ff87 0%, #00b359 50%, transparent 100%);
+            inset: 8px;
+            border: 2px solid var(--morde-green);
+            border-top-color: transparent;
             border-radius: 50%;
-            opacity: 0;
-            filter: blur(6px);
-            transition: opacity 0.3s ease, filter 0.3s ease, transform 0.3s ease;
-            pointer-events: none;
-            z-index: 1;
+            transform: rotate(18deg);
         }
 
-        .card-producto:hover {
-            transform: translateY(-8px);
-            border-color: var(--morde-verde-brillante);
-            box-shadow: 0 12px 25px -5px rgba(0, 255, 135, 0.4), 
-                        0 0 15px rgba(0, 255, 135, 0.2);
+        .brand-mark::after {
+            inset: 14px;
+            border-width: 2px;
+            border-left-color: transparent;
+            border-bottom-color: transparent;
+            transform: rotate(-25deg);
         }
 
-        .card-producto:hover::after {
-            opacity: 1;
-            filter: blur(4px);
-            transform: scaleX(1.3);
+        .brand-name {
+            font-weight: 800;
+            color: var(--morde-text);
+            letter-spacing: 0.08em;
+            text-shadow: 0 0 18px rgba(140,255,176,0.2);
         }
 
-        /* COMPONENTES SECUNDARIOS */
-        .badge-categoria { background-color: var(--morde-verde-oscuro); color: var(--morde-verde-brillante); border: 1px solid var(--morde-verde-fuego); }
-        .price-tag { font-size: 1.3rem; font-weight: bold; color: var(--morde-verde-brillante); }
-        
-        .btn-morde { 
-            background-color: var(--morde-verde-oscuro); 
-            color: var(--morde-verde-brillante); 
-            border: 1px solid var(--morde-verde-fuego); 
-            transition: all 0.2s; 
-        }
-        .btn-morde:hover { 
-            background-color: var(--morde-verde-brillante); 
-            color: #0a0f14; 
-            font-weight: bold;
-            box-shadow: 0 0 10px rgba(0, 255, 135, 0.8);
+        .brand-name span {
+            color: var(--morde-green);
         }
 
-        .btn-espectral-outline {
-            color: var(--morde-verde-brillante);
-            border-color: var(--morde-verde-brillante);
-        }
-        .btn-espectral-outline:hover {
-            background-color: var(--morde-verde-brillante);
-            color: #0a0f14;
-            font-weight: bold;
+        .top-nav-links {
+            display: flex;
+            align-items: center;
+            gap: 1.8rem;
+            padding: 0 1rem;
+            margin: 0 auto;
+            list-style: none;
         }
 
-        /* APARTADO CONTENEDOR PARA TU PNG EN EL NAVBAR */
-        .contenedor-png-personalizado {
+        .top-nav-links a {
+            color: rgba(255,255,255,0.78);
+            text-transform: uppercase;
+            letter-spacing: 0.14em;
+            font-size: 0.7rem;
+            font-weight: 700;
+            transition: color 0.2s ease;
+        }
+
+        .top-nav-links a:hover {
+            color: var(--morde-green);
+        }
+
+        .top-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .mini-pill {
+            color: var(--morde-text);
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(240,179,106,0.22);
+            border-radius: 999px;
+            padding: 0.58rem 0.9rem;
+            font-size: 0.72rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            transition: 0.25s ease;
+        }
+
+        .mini-pill:hover {
+            border-color: rgba(240,179,106,0.65);
+            box-shadow: 0 0 18px rgba(214,144,61,0.18);
+            color: var(--morde-green);
+        }
+
+        .btn-morde-primary {
+            background: linear-gradient(135deg, var(--morde-green-3), var(--morde-green));
+            color: #170d07;
+            border: none;
+            border-radius: 999px;
+            padding: 0.76rem 1.3rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            box-shadow: 0 10px 28px rgba(214,144,61,0.22);
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .btn-morde-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 18px 32px rgba(214,144,61,0.28);
+            color: #170d07;
+        }
+
+        .btn-morde-secondary {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(245,208,139,0.45);
+            color: var(--morde-gold);
+            border-radius: 999px;
+            padding: 0.76rem 1.15rem;
+            font-weight: 700;
+            transition: 0.25s ease;
+        }
+
+        .btn-morde-secondary:hover {
+            background: rgba(245,208,139,0.08);
+            border-color: rgba(245,208,139,0.75);
+            transform: translateY(-2px);
+            color: #f7e1b1;
+        }
+
+        .cart-badge {
+            position: absolute;
+            top: -8px;
+            right: -10px;
+            width: 22px;
+            height: 22px;
             display: flex;
             align-items: center;
             justify-content: center;
-            height: 45px;
-            margin-left: 10px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ff7d7d, #ce2d2d);
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 700;
+            box-shadow: 0 0 18px rgba(206, 45, 45, 0.5);
         }
-        .png-personalizado {
-            max-height: 100%;
-            width: auto;
+
+        .hero-banner {
+            position: relative;
+            min-height: 700px;
+            display: flex;
+            align-items: flex-end;
+            background:
+                linear-gradient(90deg, rgba(10, 8, 7, 0.78) 0%, rgba(10, 8, 7, 0.52) 30%, rgba(10, 8, 7, 0.2) 55%, rgba(10, 8, 7, 0.6) 100%),
+                url('https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Ornn_0.jpg') center 18% / cover no-repeat;
+            border-bottom: 1px solid rgba(240,179,106,0.20);
+            overflow: hidden;
+            isolation: isolate;
+            transition: min-height 0.7s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.7s ease;
+        }
+
+        body.scrolled .hero-banner {
+            min-height: 420px;
+        }
+
+        body.scrolled .hero-content {
+            transform: scale(0.96);
+            transform-origin: left bottom;
+        }
+
+        .hero-banner::before,
+        .hero-banner::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+        }
+
+        .hero-banner::before {
+            background:
+                linear-gradient(180deg, rgba(10, 8, 7, 0.18), rgba(10, 8, 7, 0.6) 60%, rgba(10, 8, 7, 0.9)),
+                repeating-linear-gradient(
+                    90deg,
+                    rgba(255,255,255,0.04),
+                    rgba(255,255,255,0.04) 1px,
+                    transparent 1px,
+                    transparent 8px
+                );
+            mix-blend-mode: screen;
+            opacity: 0.7;
+        }
+
+        .hero-banner::after {
+            inset: auto 0 0 0;
+            height: 140px;
+            background: linear-gradient(180deg, rgba(8,13,13,0), rgba(8,13,13,0.9));
+        }
+
+        @keyframes drift {
+            0% { transform: translate3d(0, 0, 0) scale(1); }
+            50% { transform: translate3d(10px, -12px, 0) scale(1.03); }
+            100% { transform: translate3d(0, 0, 0) scale(1); }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 700px;
+            margin: 0 0 2.7rem 3rem;
+            padding: 2rem 0;
+            animation: drift 12s ease-in-out infinite;
+            transition: transform 0.6s ease;
+        }
+
+        .eyebrow {
+            display: inline-block;
+            padding: 0.2rem 0;
+            font-size: 0.72rem;
+            letter-spacing: 0.24em;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.92);
+            margin-bottom: 1rem;
+        }
+
+        .hero-title {
+            margin: 0;
+            font-size: clamp(2.8rem, 4vw, 5.8rem);
+            line-height: 0.92;
+            font-weight: 900;
+            letter-spacing: -0.08em;
+            text-transform: uppercase;
+            color: #f3f8f6;
+            text-shadow: 0 12px 26px rgba(0,0,0,0.42);
+        }
+
+        .hero-accent {
+            display: block;
+            color: var(--morde-green);
+            text-shadow: 0 0 22px rgba(214,144,61,0.22);
+        }
+
+        .hero-subtitle {
+            margin-top: 1.2rem;
+            max-width: 560px;
+            font-size: 1.08rem;
+            line-height: 1.8;
+            color: rgba(255,255,255,0.8);
+        }
+
+        .cta-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.9rem;
+            margin-top: 2rem;
+        }
+
+        .hero-meta {
+            display: flex;
+            align-items: center;
+            gap: 1.2rem;
+            margin-top: 1.6rem;
+            flex-wrap: wrap;
+        }
+
+        .hero-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.65rem 0.9rem;
+            border-radius: 999px;
+            background: rgba(7, 12, 11, 0.52);
+            border: 1px solid rgba(140,255,176,0.18);
+            box-shadow: inset 0 0 12px rgba(56,225,141,0.05);
+        }
+
+        .hero-meta-item .dot {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: var(--morde-green);
+            box-shadow: 0 0 12px rgba(214,144,61,0.8);
+        }
+
+        .hero-meta-item span {
+            font-size: 0.7rem;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.8);
+        }
+
+        .feature-strip {
+            max-width: 1200px;
+            margin: 2rem auto 0;
+            padding: 0 1.25rem;
+            position: relative;
+            z-index: 2;
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 1rem;
+        }
+
+        .feature-box {
+            background: rgba(12, 18, 16, 0.8);
+            border: 1px solid rgba(140,255,176,0.12);
+            border-radius: 18px;
+            padding: 1.2rem 1.15rem;
+            box-shadow: 0 16px 30px rgba(0,0,0,0.18);
+            backdrop-filter: blur(8px);
+            transition: transform 0.25s ease, border-color 0.25s ease;
+        }
+
+        .feature-box:hover {
+            transform: translateY(-4px);
+            border-color: rgba(140,255,176,0.34);
+        }
+
+        .feature-box strong {
+            display: block;
+            margin-bottom: 0.7rem;
+            color: var(--morde-green);
+            font-size: 0.72rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+        }
+
+        .feature-box span {
+            color: rgba(255,255,255,0.82);
+            font-size: 0.94rem;
+            line-height: 1.6;
+        }
+
+        .container-morde {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 3rem 1.25rem 4rem;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: end;
+            justify-content: space-between;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-header h2 {
+            margin: 0;
+            font-size: clamp(2rem, 3vw, 3rem);
+            letter-spacing: -0.05em;
+            font-weight: 900;
+            text-transform: uppercase;
+            color: #f2f7f4;
+        }
+
+        .section-header h2 span {
+            color: var(--morde-green);
+        }
+
+        .section-header p {
+            margin: 0;
+            color: rgba(255,255,255,0.7);
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+        }
+
+        .filter-panel {
+            background: linear-gradient(180deg, rgba(13, 21, 19, 0.96), rgba(9, 13, 12, 0.96));
+            border: 1px solid rgba(140,255,176,0.18);
+            border-radius: 22px;
+            padding: 1rem 1.1rem;
+            box-shadow: 0 20px 32px rgba(0,0,0,0.14);
+            margin-bottom: 2rem;
+        }
+
+        .custom-input,
+        .custom-select {
+            border-radius: 14px !important;
+            background: rgba(255,255,255,0.02) !important;
+            color: white !important;
+            border: 1px solid rgba(255,255,255,0.1) !important;
+            padding: 0.8rem 1rem !important;
+            box-shadow: none !important;
+        }
+
+        .custom-input::placeholder {
+            color: rgba(255,255,255,0.42);
+        }
+
+        .custom-input:focus,
+        .custom-select:focus {
+            border-color: rgba(140,255,176,0.7) !important;
+            box-shadow: 0 0 0 0.18rem rgba(56,225,141,0.12) !important;
+        }
+
+        .input-group-text {
+            background: rgba(255,255,255,0.02) !important;
+            color: var(--morde-green) !important;
+            border-color: rgba(255,255,255,0.1) !important;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 1.5rem;
+        }
+
+        .product-card {
+            position: relative;
+            background: linear-gradient(180deg, rgba(16, 22, 20, 0.94), rgba(10, 14, 12, 0.98));
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 22px;
+            overflow: hidden;
+            transition: transform 0.28s ease, box-shadow 0.28s ease, border-color 0.28s ease;
+            height: 100%;
+        }
+
+        .product-card::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(120deg, transparent 0%, rgba(140,255,176,0.08) 46%, transparent 100%);
+            transform: translateX(-120%);
+            transition: transform 0.8s ease;
+        }
+
+        .product-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(140,255,176,0.38);
+            box-shadow: 0 24px 42px rgba(0,0,0,0.22), 0 0 22px rgba(56,225,141,0.1);
+        }
+
+        .product-card:hover::before {
+            transform: translateX(120%);
+        }
+
+        .product-image-wrap {
+            position: relative;
+            padding: 0.8rem 0.8rem 0;
+        }
+
+        .product-image {
+            width: 100%;
+            height: 210px;
             object-fit: contain;
-            filter: drop-shadow(0 0 5px rgba(0, 255, 135, 0.6));
+            display: block;
+            border-radius: 16px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(0,0,0,0.2));
+            filter: drop-shadow(0 16px 18px rgba(0,0,0,0.25));
+        }
+
+        .badge-category {
+            position: absolute;
+            top: 18px;
+            left: 18px;
+            padding: 0.36rem 0.7rem;
+            border-radius: 999px;
+            border: 1px solid rgba(240,179,106,0.25);
+            background: rgba(18, 38, 30, 0.7);
+            color: var(--morde-green);
+            font-size: 0.66rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .product-body {
+            padding: 1rem 1rem 1.2rem;
+        }
+
+        .product-topline {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.7rem;
+            font-size: 0.68rem;
+            color: rgba(255,255,255,0.56);
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            margin-bottom: 0.7rem;
+        }
+
+        .product-name {
+            margin: 0;
+            min-height: 52px;
+            color: #f8fbfa;
+            font-size: 1.22rem;
+            font-weight: 800;
+            letter-spacing: -0.04em;
+            line-height: 1.2;
+        }
+
+        .product-price-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.9rem;
+            margin-top: 1rem;
+            padding-top: 0.9rem;
+            border-top: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .price-value {
+            color: var(--morde-green);
+        }
+
+        .stock-badge {
+            border-radius: 999px;
+            padding: 0.38rem 0.7rem;
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+        }
+
+        .stock-ok {
+            background: rgba(56,225,141,0.12);
+            color: #8ff7c0;
+            border: 1px solid rgba(56,225,141,0.45);
+        }
+
+        .stock-no {
+            background: rgba(255, 120, 120, 0.08);
+            color: #ffb6b6;
+            border: 1px solid rgba(255, 120, 120, 0.32);
+        }
+
+        .add-btn {
+            width: 100%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 1rem;
+            border: none;
+            border-radius: 14px;
+            padding: 0.85rem 1rem;
+            background: linear-gradient(135deg, var(--morde-green-3), var(--morde-green));
+            color: #061a12;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            box-shadow: 0 12px 22px rgba(56,225,141,0.18);
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .add-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 18px 28px rgba(56,225,141,0.24);
+            color: #061a12;
+        }
+
+        .btn-disabled {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.08);
+            color: rgba(255,255,255,0.5);
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .empty-state {
+            background: rgba(12, 18, 16, 0.9);
+            border: 1px solid rgba(140,255,176,0.16);
+            border-radius: 22px;
+            padding: 3rem 1rem;
+            text-align: center;
+            color: rgba(255,255,255,0.8);
+        }
+
+        .empty-state i {
+            font-size: 2.5rem;
+            color: var(--morde-green);
+            margin-bottom: 1rem;
+        }
+
+        .alert-morde {
+            background: rgba(14, 22, 20, 0.8);
+            border: 1px solid rgba(140,255,176,0.2);
+            border-radius: 16px;
+            color: var(--morde-text);
+            margin: 1.25rem 0 2rem;
+        }
+
+        @media (max-width: 1100px) {
+            .product-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            .hero-content { margin-left: 1.5rem; }
+        }
+
+        @media (max-width: 768px) {
+            .top-actions { width: 100%; justify-content: flex-end; }
+            .hero-banner { min-height: 520px; }
+            .feature-strip { grid-template-columns: 1fr; margin-top: 1rem; }
+            .hero-content { margin-left: 1rem; margin-right: 1rem; }
+            .product-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
+    <div class="page-shell">
+        <nav class="navbar navbar-expand-lg navbar-mordekaiser">
+            <div class="container">
+                <a class="navbar-brand brand-wrap" href="{% url 'lista_productos' %}">
+                    <div class="brand-mark"></div>
+                    <div class="brand-name">La Ferretería <span>Mordekaiser</span></div>
+                </a>
 
-    <!-- Header Navbar Re-diseñado con Fuego Verde -->
-    <nav class="navbar navbar-expand-lg navbar-dark navbar-mordekaiser sticky-top">
-        <div class="container">
-           <a class="navbar-brand texto-espectral fw-bold fs-4 d-flex align-items-center" href="{% url 'lista_productos' %}">
-    <!-- IMAGEN PNG A LA IZQUIERDA DEL TÍTULO -->
-    <img src="{https://cmsassets.rgpub.io/sanity/images/dsfx7636/news/abb202d7e8349ee4cc510cedeadfea39c4c0e641-500x500.jpg?accountingTag=WR}" 
-         alt="Icono Mordekaiser" 
-         style="height: 35px; width: auto; margin-right: 10px; filter: drop-shadow(0 0 6px rgba(0, 255, 135, 0.8));"
-         onerror="this.src='https://cmsassets.rgpub.io/sanity/images/dsfx7636/news/abb202d7e8349ee4cc510cedeadfea39c4c0e641-500x500.jpg?accountingTag=WR'">
-    <span>La Ferretería Mordekaiser</span>
-</a>
+                <ul class="top-nav-links d-none d-lg-flex mb-0">
+                    <li><a href="#">Racing</a></li>
+                    <li><a href="#">Sports cars</a></li>
+                    <li><a href="#">Colecciones</a></li>
+                    <li><a href="#">Experiencias</a></li>
+                    <li><a href="#">About us</a></li>
+                </ul>
 
-            <div class="d-flex ms-auto align-items-center gap-3">
-                {% if user.is_authenticated %}
-                    <span class="text-light small"><i class="bi bi-person-circle texto-espectral me-1"></i>{{ user.username }}</span>
-                    <a href="{% url 'ver_carrito' %}" class="btn btn-espectral-outline position-relative btn-sm">
-                        <i class="bi bi-cart3 me-1"></i> Carrito
-                        {% if total_items_carrito > 0 %}
-                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                            {{ total_items_carrito }}
-                        </span>
-                        {% endif %}
-                    </a>
-                    <a href="{% url 'logout' %}" class="btn btn-outline-danger btn-sm"><i class="bi bi-box-arrow-right"></i> Salir</a>
-                {% else %}
-                    <a href="{% url 'login' %}" class="btn btn-espectral-outline btn-sm">Iniciar Sesión</a>
-                    <a href="{% url 'register' %}" class="btn btn-morde btn-sm fw-bold">Registrarse</a>
-                {% endif %}
-
-                <!-- =================================================================== -->
-                <!-- CONTENEDOR PARA TU PNG PERSONALIZADO EN EL LADO DERECHO DEL NAVBAR  -->
-                <!-- =================================================================== -->
-                <div class="contenedor-png-personalizado">
-                    <!-- Reemplaza el enlace src con la ruta a tu archivo PNG -->
-                    <img src="https://cmsassets.rgpub.io/sanity/images/dsfx7636/news/abb202d7e8349ee4cc510cedeadfea39c4c0e641-500x500.jpg?accountingTag=WR" 
-                         alt="Icono Personalizado" 
-                         class="png-personalizado" 
-                         id="imagen-png-derecha">
+                <div class="top-actions ms-auto">
+                    {% if user.is_authenticated %}
+                        <span class="mini-pill"><i class="bi bi-person-circle me-1"></i>{{ user.username }}</span>
+                        <a href="{% url 'ver_carrito' %}" class="btn btn-morde-secondary position-relative">
+                            <i class="bi bi-cart3 me-1"></i> Carrito
+                            {% if total_items_carrito > 0 %}
+                                <span class="cart-badge">{{ total_items_carrito }}</span>
+                            {% endif %}
+                        </a>
+                        <a href="{% url 'logout' %}" class="btn btn-morde-primary btn-sm"><i class="bi bi-box-arrow-right me-1"></i>Salir</a>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="mini-pill">Iniciar sesión</a>
+                        <a href="{% url 'register' %}" class="btn btn-morde-primary btn-sm">Registrarse</a>
+                    {% endif %}
                 </div>
             </div>
-        </div>
-    </nav>
+        </nav>
 
-    <!-- Banner Animado de Mordekaiser -->
-    <div class="mordekaiser-banner text-center mb-4">
-        <div class="mordekaiser-overlay">
-            <h1 class="display-3 mordekaiser-title">El Hierro Perdurará</h1>
-            <p class="fs-4 text-light">Equípate con el mejor acero para dominar tus proyectos.</p>
-        </div>
-    </div>
+        <header class="hero-banner">
+            <div class="hero-content">
+                <div class="eyebrow">Imperio del acero</div>
+                <h1 class="hero-title">El hierro <span class="hero-accent">perdurará</span></h1>
+                <p class="hero-subtitle">
+                    Herramientas, insumos y equipamiento de alto rendimiento para quienes construyen con fuerza, precisión y presencia.
+                </p>
 
-    <div class="container">
-        
-        <!-- Mensajes Flash -->
-        {% if messages %}
-            {% for message in messages %}
-                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                    {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            {% endfor %}
-        {% endif %}
-
-        <!-- Filtro y Búsqueda -->
-        <div class="card p-3 mb-4 bg-dark text-light border-secondary">
-            <form method="GET" class="row g-3 align-items-center">
-                <div class="col-md-5">
-                    <div class="input-group">
-                        <span class="input-group-text bg-secondary text-light border-secondary"><i class="bi bi-search"></i></span>
-                        <input type="text" name="q" class="form-control bg-dark text-light border-secondary" placeholder="Buscar herramienta o insumo..." value="{{ query_nombre }}">
+                <div class="hero-meta">
+                    <div class="hero-meta-item">
+                        <span class="dot"></span>
+                        <span>Calidad premium</span>
+                    </div>
+                    <div class="hero-meta-item">
+                        <span class="dot"></span>
+                        <span>Entrega inmediata</span>
                     </div>
                 </div>
-                <div class="col-md-4">
-                    <select name="categoria" class="form-select bg-dark text-light border-secondary">
-                        <option value="">-- Todas las Categorías --</option>
-                        {% for cat in categorias %}
-                            <option value="{{ cat }}" {% if cat == categoria_filtro %}selected{% endif %}>{{ cat }}</option>
-                        {% endfor %}
-                    </select>
+
+                <div class="cta-row">
+                    <a href="#catalogo" class="btn btn-morde-primary">Ver catálogo</a>
+                    <a href="{% url 'ver_carrito' %}" class="btn btn-morde-secondary">Ir al carrito</a>
                 </div>
-                <div class="col-md-3 d-flex gap-2">
-                    <button type="submit" class="btn btn-morde w-100"><i class="bi bi-funnel"></i> Filtrar</button>
-                    <a href="{% url 'lista_productos' %}" class="btn btn-outline-secondary"><i class="bi bi-arrow-counterclockwise"></i></a>
-                </div>
-            </form>
+            </div>
+        </header>
+
+        <div class="feature-strip">
+            <div class="feature-box">
+                <strong>Fuerza brutal</strong>
+                <span>Materiales diseñados para trabajo pesado, resistencia extrema y durabilidad inigualable.</span>
+            </div>
+            <div class="feature-box">
+                <strong>Precisión militar</strong>
+                <span>Herramientas profesionales para ejecuciones pulidas, consistentes y confiables.</span>
+            </div>
+            <div class="feature-box">
+                <strong>Estilo industrial</strong>
+                <span>Un look oscuro, premium y sobrio que refleja liderazgo en cada proyecto.</span>
+            </div>
         </div>
 
-        <!-- Grilla de Productos con Verde Espectral -->
-        <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-4 mb-5">
-            {% for producto in productos %}
-            <div class="col">
-                <div class="card h-100 card-producto">
-                    
-                    <!-- Imagen del Producto -->
-                    <img src="{% static producto.imagen %}" 
-                         class="card-img-top p-2" 
-                         alt="{{ producto.nombre }}" 
-                         style="height: 180px; object-fit: contain; background-color: #0b1016;"
-                         onerror="this.src='https://via.placeholder.com/300x180/121921/00ff87?text=Ferreteria+Mordekaiser'">
+        <main id="catalogo" class="container-morde">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-morde alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
 
-                    <div class="card-body d-flex flex-column text-light">
-                        <div class="d-flex justify-content-between align-items-start mb-2">
-                            <span class="badge badge-categoria">{{ producto.categoria }}</span>
-                            <small class="text-muted">ID: #{{ producto.id }}</small>
+            <div class="section-header">
+                <h2>Catálogo <span>mordekaiser</span></h2>
+                <p>Herramientas para proyectos que exigen dominio</p>
+            </div>
+
+            <div class="filter-panel">
+                <form method="GET" class="row g-3 align-items-center">
+                    <div class="col-md-5">
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-search"></i></span>
+                            <input type="text" name="q" class="form-control custom-input" placeholder="Buscar herramienta o insumo..." value="{{ query_nombre }}">
                         </div>
-                        <h5 class="card-title texto-espectral fw-bold">{{ producto.nombre }}</h5>
-                        
-                        <div class="mt-auto pt-3 border-top border-secondary">
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <span class="price-tag">${{ producto.precio }}</span>
+                    </div>
+                    <div class="col-md-4">
+                        <select name="categoria" class="form-select custom-select">
+                            <option value="">-- Todas las categorías --</option>
+                            {% for cat in categorias %}
+                                <option value="{{ cat }}" {% if cat == categoria_filtro %}selected{% endif %}>{{ cat }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3 d-flex gap-2">
+                        <button type="submit" class="btn btn-morde-primary w-100"><i class="bi bi-funnel me-1"></i>Filtrar</button>
+                        <a href="{% url 'lista_productos' %}" class="btn btn-morde-secondary"><i class="bi bi-arrow-counterclockwise"></i></a>
+                    </div>
+                </form>
+            </div>
+
+            <div class="product-grid">
+                {% for producto in productos %}
+                    <article class="product-card">
+                        <div class="product-image-wrap">
+                            <span class="badge-category">{{ producto.categoria }}</span>
+                            <img src="{% static producto.imagen %}" class="product-image" alt="{{ producto.nombre }}" onerror="this.src='https://images.unsplash.com/photo-1581092921461-eab62e97a780?auto=format&fit=crop&w=900&q=80'">
+                        </div>
+
+                        <div class="product-body">
+                            <div class="product-topline">
+                                <span>ID #{{ producto.id }}</span>
+                                <span>Premium</span>
+                            </div>
+                            <h3 class="product-name">{{ producto.nombre }}</h3>
+
+                            <div class="product-price-row">
+                                <span class="price-value">${{ producto.precio }}</span>
                                 {% if producto.stock > 0 %}
-                                    <span class="badge bg-success">Stock: {{ producto.stock }} u.</span>
+                                    <span class="stock-badge stock-ok">Stock: {{ producto.stock }}</span>
                                 {% else %}
-                                    <span class="badge bg-danger">Agotado</span>
+                                    <span class="stock-badge stock-no">Agotado</span>
                                 {% endif %}
                             </div>
 
                             {% if producto.stock > 0 %}
-                                <a href="{% url 'agregar_al_carrito' producto.id %}" class="btn btn-morde w-100">
-                                    <i class="bi bi-cart-plus me-1"></i> Agregar
+                                <a href="{% url 'agregar_al_carrito' producto.id %}" class="add-btn">
+                                    <i class="bi bi-cart-plus me-1"></i>Agregar
                                 </a>
                             {% else %}
-                                <button class="btn btn-secondary w-100" disabled>Sin Stock</button>
+                                <button class="add-btn btn-disabled" disabled>Sin stock</button>
                             {% endif %}
                         </div>
+                    </article>
+                {% empty %}
+                    <div class="col-12">
+                        <div class="empty-state">
+                            <i class="bi bi-exclamation-triangle"></i>
+                            <p class="fs-4 mb-0">No se encontraron productos con esos filtros.</p>
+                        </div>
                     </div>
-                </div>
+                {% endfor %}
             </div>
-            {% empty %}
-            <div class="col-12 text-center py-5">
-                <i class="bi bi-exclamation-triangle fs-1 text-warning"></i>
-                <p class="fs-4 mt-2">No se encontraron productos en el reino del hierro.</p>
-            </div>
-            {% endfor %}
-        </div>
+        </main>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const toggleHeroState = () => {
+            document.body.classList.toggle('scrolled', window.scrollY > 60);
+        };
+
+        window.addEventListener('scroll', toggleHeroState, { passive: true });
+        toggleHeroState();
+    </script>
 </body>
 </html>
