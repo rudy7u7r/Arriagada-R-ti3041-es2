@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>La Ferretería Mordekaiser</title>
+    <title>La Ferretería Ornn</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <style>
@@ -22,6 +22,10 @@
             --morde-muted: #d7c2a2;
             --morde-gold: #f5d08b;
             --morde-shadow: rgba(255, 156, 64, 0.24);
+            --ornn-ember: #ff8b2d;
+            --ornn-flame: #ffbf5b;
+            --ornn-ash: #1b130f;
+            --ornn-iron: #f0d7a3;
         }
 
         * { box-sizing: border-box; }
@@ -235,9 +239,11 @@
 
         .hero-banner {
             position: relative;
-            min-height: 700px;
+            width: 100%;
+            min-height: 100vh;
             display: flex;
-            align-items: flex-end;
+            align-items: center;
+            justify-content: center;
             background:
                 linear-gradient(90deg, rgba(10, 8, 7, 0.78) 0%, rgba(10, 8, 7, 0.52) 30%, rgba(10, 8, 7, 0.2) 55%, rgba(10, 8, 7, 0.6) 100%),
                 url('https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Ornn_0.jpg') center 18% / cover no-repeat;
@@ -247,6 +253,11 @@
             transition: min-height 0.7s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.7s ease;
         }
 
+        .hero-banner.collapsed {
+            min-height: 340px;
+            align-items: flex-end;
+        }
+
         body.scrolled .hero-banner {
             min-height: 420px;
         }
@@ -254,6 +265,26 @@
         body.scrolled .hero-content {
             transform: scale(0.96);
             transform-origin: left bottom;
+        }
+
+        .hero-banner .flame-rim {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 18px;
+            background: linear-gradient(90deg,
+                rgba(255, 118, 0, 0),
+                rgba(255, 150, 34, 0.8) 15%,
+                rgba(255, 90, 0, 1) 30%,
+                rgba(255, 244, 182, 0.9) 50%,
+                rgba(255, 90, 0, 1) 70%,
+                rgba(255, 150, 34, 0.8) 85%,
+                rgba(255, 118, 0, 0) 100%);
+            filter: blur(2px);
+            box-shadow: 0 0 18px rgba(255, 120, 0, 0.7), 0 -4px 16px rgba(255, 180, 80, 0.4);
+            opacity: 0.95;
+            z-index: 2;
         }
 
         .hero-banner::before,
@@ -284,6 +315,33 @@
             background: linear-gradient(180deg, rgba(8,13,13,0), rgba(8,13,13,0.9));
         }
 
+        .hero-banner .fire-overlay {
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(circle at 50% 78%, rgba(255, 164, 64, 0.95), rgba(255, 92, 0, 0.9) 18%, rgba(116, 28, 0, 0.8) 35%, rgba(0,0,0,0) 70%),
+                radial-gradient(circle at 20% 70%, rgba(255, 165, 76, 0.8), rgba(255, 92, 0, 0.5) 16%, rgba(0,0,0,0) 45%),
+                radial-gradient(circle at 80% 62%, rgba(255, 175, 79, 0.8), rgba(255, 92, 0, 0.45) 18%, rgba(0,0,0,0) 48%),
+                linear-gradient(180deg, rgba(30, 9, 0, 0.2), rgba(15, 5, 0, 0.7));
+            opacity: 0;
+            transform: scale(1.18);
+            transition: opacity 0.7s ease, transform 0.9s ease;
+            pointer-events: none;
+            z-index: 0;
+            filter: blur(10px);
+            animation: fireBreath 2.4s ease-in-out infinite alternate;
+        }
+
+        .hero-banner.fire-mode .fire-overlay {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        @keyframes fireBreath {
+            0% { transform: scale(1.05); filter: blur(10px) saturate(1); }
+            100% { transform: scale(1.18); filter: blur(18px) saturate(1.4); }
+        }
+
         @keyframes drift {
             0% { transform: translate3d(0, 0, 0) scale(1); }
             50% { transform: translate3d(10px, -12px, 0) scale(1.03); }
@@ -293,11 +351,12 @@
         .hero-content {
             position: relative;
             z-index: 1;
-            max-width: 700px;
-            margin: 0 0 2.7rem 3rem;
+            max-width: 920px;
+            margin: 0;
             padding: 2rem 0;
             animation: drift 12s ease-in-out infinite;
             transition: transform 0.6s ease;
+            text-align: center;
         }
 
         .eyebrow {
@@ -328,8 +387,8 @@
         }
 
         .hero-subtitle {
-            margin-top: 1.2rem;
-            max-width: 560px;
+            margin: 1.2rem auto 0;
+            max-width: 650px;
             font-size: 1.08rem;
             line-height: 1.8;
             color: rgba(255,255,255,0.8);
@@ -338,6 +397,7 @@
         .cta-row {
             display: flex;
             flex-wrap: wrap;
+            justify-content: center;
             gap: 0.9rem;
             margin-top: 2rem;
         }
@@ -345,6 +405,7 @@
         .hero-meta {
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 1.2rem;
             margin-top: 1.6rem;
             flex-wrap: wrap;
@@ -497,26 +558,27 @@
         .product-card {
             position: relative;
             background: linear-gradient(180deg, rgba(16, 22, 20, 0.94), rgba(10, 14, 12, 0.98));
-            border: 1px solid rgba(255,255,255,0.07);
+            border: 1.4px solid rgba(255, 197, 97, 0.38);
             border-radius: 22px;
             overflow: hidden;
             transition: transform 0.28s ease, box-shadow 0.28s ease, border-color 0.28s ease;
             height: 100%;
+            box-shadow: inset 0 0 0 1px rgba(255, 191, 91, 0.15), 0 22px 36px rgba(8, 6, 5, 0.28), 0 0 18px rgba(255, 128, 32, 0.08);
         }
 
         .product-card::before {
             content: "";
             position: absolute;
             inset: 0;
-            background: linear-gradient(120deg, transparent 0%, rgba(140,255,176,0.08) 46%, transparent 100%);
+            background: linear-gradient(120deg, transparent 0%, rgba(255, 175, 79, 0.1) 46%, transparent 100%);
             transform: translateX(-120%);
             transition: transform 0.8s ease;
         }
 
         .product-card:hover {
             transform: translateY(-8px);
-            border-color: rgba(140,255,176,0.38);
-            box-shadow: 0 24px 42px rgba(0,0,0,0.22), 0 0 22px rgba(56,225,141,0.1);
+            border-color: rgba(255, 182, 82, 0.7);
+            box-shadow: inset 0 0 0 1px rgba(255, 191, 91, 0.22), 0 28px 48px rgba(0,0,0,0.26), 0 0 22px rgba(255, 142, 46, 0.12);
         }
 
         .product-card:hover::before {
@@ -688,15 +750,15 @@
             <div class="container">
                 <a class="navbar-brand brand-wrap" href="{% url 'lista_productos' %}">
                     <div class="brand-mark"></div>
-                    <div class="brand-name">La Ferretería <span>Mordekaiser</span></div>
+                    <div class="brand-name">La Ferretería <span>Ornn</span></div>
                 </a>
 
                 <ul class="top-nav-links d-none d-lg-flex mb-0">
-                    <li><a href="#">Racing</a></li>
-                    <li><a href="#">Sports cars</a></li>
-                    <li><a href="#">Colecciones</a></li>
-                    <li><a href="#">Experiencias</a></li>
-                    <li><a href="#">About us</a></li>
+                    <li><a href="#">Taladros</a></li>
+                    <li><a href="#">Sierra</a></li>
+                    <li><a href="#">Pintura</a></li>
+                    <li><a href="#">Seguridad</a></li>
+                    <li><a href="#">Herramientas</a></li>
                 </ul>
 
                 <div class="top-actions ms-auto">
@@ -717,7 +779,9 @@
             </div>
         </nav>
 
-        <header class="hero-banner">
+        <header class="hero-banner" id="heroBanner">
+            <div class="fire-overlay" aria-hidden="true"></div>
+            <div class="flame-rim" aria-hidden="true"></div>
             <div class="hero-content">
                 <div class="eyebrow">Imperio del acero</div>
                 <h1 class="hero-title">El hierro <span class="hero-accent">perdurará</span></h1>
@@ -737,8 +801,7 @@
                 </div>
 
                 <div class="cta-row">
-                    <a href="#catalogo" class="btn btn-morde-primary">Ver catálogo</a>
-                    <a href="{% url 'ver_carrito' %}" class="btn btn-morde-secondary">Ir al carrito</a>
+                    <a href="#catalogo" class="btn btn-morde-primary" id="catalogTrigger">Ver catálogo</a>
                 </div>
             </div>
         </header>
@@ -769,7 +832,7 @@
             {% endif %}
 
             <div class="section-header">
-                <h2>Catálogo <span>mordekaiser</span></h2>
+                <h2>Catálogo <span>Ornn</span></h2>
                 <p>Herramientas para proyectos que exigen dominio</p>
             </div>
 
@@ -846,6 +909,23 @@
         const toggleHeroState = () => {
             document.body.classList.toggle('scrolled', window.scrollY > 60);
         };
+
+        const heroBanner = document.getElementById('heroBanner');
+        const catalogBtn = document.getElementById('catalogTrigger');
+
+        if (catalogBtn) {
+            catalogBtn.addEventListener('click', (event) => {
+                event.preventDefault();
+                heroBanner.classList.add('fire-mode');
+                document.body.classList.add('scrolled');
+                setTimeout(() => {
+                    document.querySelector('#catalogo')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 460);
+                setTimeout(() => {
+                    heroBanner.classList.remove('fire-mode');
+                }, 2000);
+            });
+        }
 
         window.addEventListener('scroll', toggleHeroState, { passive: true });
         toggleHeroState();
