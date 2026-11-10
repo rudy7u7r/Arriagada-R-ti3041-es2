@@ -1,0 +1,141 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel administrador</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        body {
+            background: linear-gradient(180deg, #0a0908, #17110d);
+            color: #f6ead9;
+            font-family: 'Segoe UI', sans-serif;
+        }
+        .container-box {
+            max-width: 1200px;
+            margin: 40px auto;
+            background: rgba(16,12,9,0.85);
+            border: 1px solid rgba(245,208,139,0.2);
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: 0 24px 60px rgba(0,0,0,0.25);
+        }
+        .btn-ornn {
+            background: linear-gradient(135deg, #a75f1e, #f0b36a);
+            color: #170d07;
+            border: none;
+            font-weight: 800;
+            border-radius: 999px;
+            padding: 0.7rem 1.2rem;
+        }
+        .btn-outline {
+            border: 1px solid rgba(245,208,139,0.4);
+            color: #f5d08b;
+            border-radius: 999px;
+            padding: 0.7rem 1.1rem;
+            background: transparent;
+        }
+        .table {
+            color: #f6ead9;
+        }
+        .table thead th {
+            background: rgba(240,179,106,0.08);
+            color: #f5d08b;
+            border-bottom: 1px solid rgba(245,208,139,0.16);
+        }
+        .table td, .table th {
+            vertical-align: middle;
+            border-color: rgba(245,208,139,0.1);
+        }
+        .img-thumb {
+            width: 72px;
+            height: 72px;
+            object-fit: cover;
+            border-radius: 12px;
+            border: 1px solid rgba(245,208,139,0.2);
+            background: #1c1815;
+        }
+        .badge-stock {
+            display: inline-block;
+            padding: 0.35rem 0.6rem;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+        .stock-ok { background: rgba(40,167,69,0.15); color: #7ae4a0; }
+        .stock-no { background: rgba(220,53,69,0.15); color: #ff9ca2; }
+    </style>
+</head>
+<body>
+    <div class="container-box">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+            <div>
+                <h2 class="mb-1">Panel administrador</h2>
+                <small class="text-light text-opacity-75">Gestión de productos</small>
+            </div>
+            <div class="d-flex gap-2">
+                <a href="{% url 'lista_productos' %}" class="btn btn-outline">Volver a tienda</a>
+                <a href="{% url 'producto_nuevo' %}" class="btn btn-ornn">Agregar producto</a>
+            </div>
+        </div>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} mt-2">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Imagen</th>
+                        <th>Nombre</th>
+                        <th>Categoría</th>
+                        <th>Precio</th>
+                        <th>Stock</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for producto in productos %}
+                    <tr>
+                        <td>#{{ producto.id }}</td>
+                        <td>
+                            {% if producto.imagen %}
+                                <img src="{{ producto.imagen }}" class="img-thumb" onerror="this.src='https://images.unsplash.com/photo-1581092921461-eab62e97a780?auto=format&fit=crop&w=900&q=80';" alt="{{ producto.nombre }}">
+                            {% else %}
+                                <img src="https://images.unsplash.com/photo-1581092921461-eab62e97a780?auto=format&fit=crop&w=900&q=80" class="img-thumb" alt="Sin imagen">
+                            {% endif %}
+                        </td>
+                        <td>{{ producto.nombre }}</td>
+                        <td>{{ producto.categoria }}</td>
+                        <td>${{ producto.precio }}</td>
+                        <td>
+                            {% if producto.stock > 0 %}
+                                <span class="badge-stock stock-ok">{{ producto.stock }}</span>
+                            {% else %}
+                                <span class="badge-stock stock-no">Sin stock</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="d-flex gap-2">
+                                <a href="{% url 'producto_editar' producto.id %}" class="btn btn-sm btn-outline">Editar</a>
+                                <a href="{% url 'producto_eliminar' producto.id %}" class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar este producto?');">Borrar</a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center py-4 text-light text-opacity-75">No hay productos registrados.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

@@ -2,101 +2,459 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Carrito de Compras - La Ferretería Ornn</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carrito de compras - La Ferretería Ornn</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <style>
-        /* Fondo Temático de la Armería */
-        body { 
-            background: linear-gradient(180deg, rgba(15,20,26,0.92) 0%, rgba(10,14,18,0.96) 100%),
-                        url('https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Ornn_0.jpg') center/cover fixed no-repeat;
-            color: #e1e6eb; 
-            font-family: 'Segoe UI', sans-serif;
-            min-height: 100vh;
+        :root {
+            --morde-bg: #0b0908;
+            --morde-bg-2: #17110d;
+            --morde-panel: rgba(20, 15, 11, 0.9);
+            --morde-panel-2: rgba(12, 9, 7, 0.96);
+            --morde-line: rgba(255, 189, 93, 0.22);
+            --morde-green: #f0b36a;
+            --morde-green-2: #d6903d;
+            --morde-green-3: #a75f1e;
+            --morde-emerald: #3d2410;
+            --morde-text: #f6ead9;
+            --morde-muted: #d7c2a2;
+            --morde-gold: #f5d08b;
+            --morde-shadow: rgba(255, 156, 64, 0.24);
         }
 
-        .card-morde {
-            background: rgba(26, 34, 45, 0.9);
-            border: 1px solid #2d3b4e;
-            backdrop-filter: blur(8px);
+        * { box-sizing: border-box; }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background:
+                radial-gradient(circle at top, rgba(223, 142, 62, 0.14), transparent 24%),
+                linear-gradient(180deg, #0a0908 0%, #17110d 42%, #0a0908 100%);
+            color: var(--morde-text);
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px);
+            background-size: 30px 30px;
+            mask-image: radial-gradient(circle at center, black 48%, transparent 100%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        a { text-decoration: none; }
+
+        .page-shell { position: relative; z-index: 1; }
+
+        .navbar-mordekaiser {
+            position: sticky;
+            top: 0;
+            z-index: 40;
+            background: rgba(12, 9, 7, 0.74);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            backdrop-filter: blur(14px);
+            box-shadow: 0 12px 28px rgba(0,0,0,0.18);
+        }
+
+        .navbar-mordekaiser::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: -2px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--morde-green), var(--morde-green-3), var(--morde-green), transparent);
+            background-size: 220% 100%;
+            animation: glowLine 6s linear infinite;
+        }
+
+        @keyframes glowLine {
+            0% { background-position: 0% 0%; }
+            100% { background-position: 200% 0%; }
+        }
+
+        .brand-wrap {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            color: var(--morde-text);
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            font-size: 0.78rem;
+        }
+
+        .brand-mark {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #1d120a, #3d2410 40%, #1d120a 100%);
+            border: 1px solid rgba(240,179,106,0.30);
+            position: relative;
+            box-shadow: inset 0 0 18px rgba(214, 144, 61, 0.1), 0 0 20px rgba(214, 144, 61, 0.18);
+        }
+
+        .brand-mark::before,
+        .brand-mark::after {
+            content: "";
+            position: absolute;
+            inset: 8px;
+            border: 2px solid var(--morde-green);
+            border-top-color: transparent;
+            border-radius: 50%;
+            transform: rotate(18deg);
+        }
+
+        .brand-mark::after {
+            inset: 14px;
+            border-width: 2px;
+            border-left-color: transparent;
+            border-bottom-color: transparent;
+            transform: rotate(-25deg);
+        }
+
+        .brand-name {
+            font-weight: 800;
+            color: var(--morde-text);
+            letter-spacing: 0.08em;
+            text-shadow: 0 0 18px rgba(140,255,176,0.2);
+        }
+
+        .brand-name span {
+            color: var(--morde-green);
+        }
+
+        .top-nav-links {
+            display: flex;
+            align-items: center;
+            gap: 1.8rem;
+            padding: 0 1rem;
+            margin: 0 auto;
+            list-style: none;
+        }
+
+        .top-nav-links a {
+            color: rgba(255,255,255,0.78);
+            text-transform: uppercase;
+            letter-spacing: 0.14em;
+            font-size: 0.7rem;
+            font-weight: 700;
+            transition: color 0.2s ease;
+        }
+
+        .top-nav-links a:hover {
+            color: var(--morde-green);
+        }
+
+        .top-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .mini-pill {
+            color: var(--morde-text);
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(240,179,106,0.22);
+            border-radius: 999px;
+            padding: 0.58rem 0.9rem;
+            font-size: 0.72rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            transition: 0.25s ease;
+        }
+
+        .mini-pill:hover {
+            border-color: rgba(240,179,106,0.65);
+            box-shadow: 0 0 18px rgba(214,144,61,0.18);
+            color: var(--morde-green);
+        }
+
+        .btn-morde-primary {
+            background: linear-gradient(135deg, var(--morde-green-3), var(--morde-green));
+            color: #170d07;
+            border: none;
+            border-radius: 999px;
+            padding: 0.76rem 1.3rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            box-shadow: 0 10px 28px rgba(214,144,61,0.22);
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .btn-morde-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 18px 32px rgba(214,144,61,0.28);
+            color: #170d07;
+        }
+
+        .btn-morde-secondary {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(245,208,139,0.45);
+            color: var(--morde-gold);
+            border-radius: 999px;
+            padding: 0.76rem 1.15rem;
+            font-weight: 700;
+            transition: 0.25s ease;
+        }
+
+        .btn-morde-secondary:hover {
+            background: rgba(245,208,139,0.08);
+            border-color: rgba(245,208,139,0.75);
+            transform: translateY(-2px);
+            color: #f7e1b1;
+        }
+
+        .content-wrap {
+            padding: 40px 0 60px;
+        }
+
+        .cart-shell {
+            background: rgba(16, 12, 9, 0.78);
+            border: 1px solid rgba(245,208,139,0.2);
+            border-radius: 28px;
+            padding: 1.5rem;
+            box-shadow: 0 28px 60px rgba(0,0,0,0.28);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(245,208,139,0.18);
+        }
+
+        .section-header h2 {
+            font-weight: 800;
+            letter-spacing: -0.04em;
+            color: var(--morde-text);
+        }
+
+        .section-header h2 span {
+            color: var(--morde-green);
+        }
+
+        .table-wrap {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(245,208,139,0.15);
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .table {
+            margin: 0;
+            color: var(--morde-text);
+            border-collapse: collapse;
+        }
+
+        .table thead th {
+            background: rgba(240,179,106,0.08);
+            color: var(--morde-gold);
+            border-bottom: 1px solid rgba(245,208,139,0.16);
+            padding: 1rem 1rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            font-size: 0.72rem;
+        }
+
+        .table tbody td {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(245,208,139,0.08);
+            vertical-align: middle;
+        }
+
+        .table tbody td strong {
+            color: var(--morde-text);
+        }
+
+        .table tbody td small {
+            color: rgba(255,255,255,0.62);
+        }
+
+        .badge-soft {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 36px;
+            height: 36px;
+            border-radius: 999px;
+            background: rgba(245,208,139,0.12);
+            color: var(--morde-gold);
+            font-weight: 800;
+        }
+
+        .price-total {
+            font-weight: 800;
+            color: #f0d7a3;
+        }
+
+        .summary-card {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(245,208,139,0.2);
+            border-radius: 24px;
+            padding: 1.5rem;
+            height: 100%;
+        }
+
+        .summary-card h4 {
+            font-weight: 800;
+            color: var(--morde-gold);
+            margin-bottom: 1rem;
+            padding-bottom: 0.8rem;
+            border-bottom: 1px solid rgba(245,208,139,0.16);
+        }
+
+        .summary-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 1rem 0;
+            font-size: 1.05rem;
+            color: var(--morde-text);
+        }
+
+        .summary-row strong {
+            color: var(--morde-gold);
+        }
+
+        .total-number {
+            font-size: clamp(1.8rem, 3vw, 2.5rem);
+            font-weight: 900;
+            color: #f1c36d;
+            letter-spacing: -0.05em;
+        }
+
+        .empty-box {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(245,208,139,0.18);
+            border-radius: 24px;
+            text-align: center;
+            padding: 3rem 1.5rem;
+        }
+
+        .empty-box i {
+            font-size: 3rem;
+            color: rgba(255,255,255,0.45);
+        }
+
+        .empty-box h4 {
+            margin-top: 1rem;
+            color: rgba(255,255,255,0.85);
+        }
+
+        @media (max-width: 768px) {
+            .top-nav-links {
+                display: none;
+            }
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
         }
     </style>
 </head>
 <body>
+    <div class="page-shell">
+        <nav class="navbar navbar-expand-lg navbar-mordekaiser">
+            <div class="container">
+                <a class="navbar-brand brand-wrap" href="{% url 'lista_productos' %}">
+                    <span class="brand-mark" aria-hidden="true"></span>
+                    <span class="brand-name">La Ferretería <span>Ornn</span></span>
+                </a>
 
-    <nav class="navbar navbar-dark bg-dark border-bottom border-secondary mb-4">
-        <div class="container">
-            <a class="navbar-brand text-info fw-bold" href="{% url 'lista_productos' %}">
-                <i class="bi bi-arrow-left me-2"></i>Volver al Catálogo
-            </a>
-        </div>
-    </nav>
+                <ul class="top-nav-links d-none d-lg-flex">
+                    <li><a href="{% url 'lista_productos' %}">Catálogo</a></li>
+                    <li><a href="{% url 'ver_carrito' %}">Carrito</a></li>
+                    <li><a href="{% url 'login' %}">Iniciar sesión</a></li>
+                    <li><a href="{% url 'register' %}">Registro</a></li>
+                </ul>
 
-    <div class="container py-3">
-        <h2 class="text-info fw-bold mb-4"><i class="bi bi-cart3 me-2"></i>Tu Carrito de Armas e Insumos</h2>
-
-        {% if messages %}
-            {% for message in messages %}
-                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                    {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            {% endfor %}
-        {% endif %}
-
-        {% if items %}
-        <div class="row">
-            <div class="col-lg-8">
-                <div class="table-responsive card-morde p-3 rounded-4 border-secondary mb-4">
-                    <table class="table table-dark table-hover align-middle mb-0">
-                        <thead>
-                            <tr class="text-info border-secondary">
-                                <th>Producto</th>
-                                <th>Precio Unid.</th>
-                                <th>Cantidad</th>
-                                <th>Subtotal</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for item in items %}
-                            <tr class="border-secondary">
-                                <td>
-                                    <strong class="text-info">{{ item.producto.nombre }}</strong><br>
-                                    <small class="text-muted">{{ item.producto.categoria }}</small>
-                                </td>
-                                <td>${{ item.producto.precio }}</td>
-                                <td><span class="badge bg-info text-dark fs-6">{{ item.cantidad }}</span></td>
-                                <td class="text-success fw-bold font-monospace">${{ item.subtotal }}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+                <div class="top-actions">
+                    <a href="{% url 'lista_productos' %}" class="mini-pill">Seguir comprando</a>
+                    <a href="{% url 'confirmar_compra' %}" class="btn-morde-primary">Confirmar</a>
                 </div>
             </div>
+        </nav>
 
-            <div class="col-lg-4">
-                <div class="card card-morde text-light border-info p-4 rounded-4 shadow-lg">
-                    <h4 class="card-title text-info border-bottom border-secondary pb-2">Resumen</h4>
-                    <div class="d-flex justify-content-between align-items-center my-3">
-                        <span class="fs-5">Total Acumulado:</span>
-                        <span class="fs-2 text-success fw-bold font-monospace">${{ total }}</span>
+        <div class="container content-wrap">
+            <div class="section-header">
+                <h2><i class="bi bi-cart3 me-2"></i>Tu carrito <span>de compras</span></h2>
+            </div>
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show mb-4" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
-                    <a href="{% url 'confirmar_compra' %}" class="btn btn-info btn-lg fw-bold w-100 text-dark">
-                        Proceder a Confirmar <i class="bi bi-arrow-right ms-1"></i>
-                    </a>
-                    <a href="{% url 'vaciar_carrito' %}" class="btn btn-outline-danger btn-sm mt-3 w-100">
-                        <i class="bi bi-trash me-1"></i>Vaciar Carrito
-                    </a>
+                {% endfor %}
+            {% endif %}
+
+            {% if items %}
+                <div class="row g-4 align-items-start">
+                    <div class="col-lg-8">
+                        <div class="table-wrap">
+                            <table class="table align-middle mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Producto</th>
+                                        <th>Precio</th>
+                                        <th>Cantidad</th>
+                                        <th>Subtotal</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in items %}
+                                        <tr>
+                                            <td>
+                                                <strong>{{ item.producto.nombre }}</strong><br>
+                                                <small>{{ item.producto.categoria }}</small>
+                                            </td>
+                                            <td>${{ item.producto.precio }}</td>
+                                            <td><span class="badge-soft">{{ item.cantidad }}</span></td>
+                                            <td class="price-total">${{ item.subtotal }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <div class="summary-card">
+                            <h4>Resumen</h4>
+                            <div class="summary-row">
+                                <span>Total acumulado</span>
+                                <strong class="total-number">${{ total }}</strong>
+                            </div>
+                            <div class="d-grid gap-2 mt-3">
+                                <a href="{% url 'confirmar_compra' %}" class="btn-morde-primary text-center">Proceder a confirmar</a>
+                                <a href="{% url 'vaciar_carrito' %}" class="btn-morde-secondary text-center">Vaciar carrito</a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
+            {% else %}
+                <div class="empty-box mt-3">
+                    <i class="bi bi-cart-x"></i>
+                    <h4>No has agregado nada al carrito</h4>
+                    <a href="{% url 'lista_productos' %}" class="btn-morde-primary mt-3 d-inline-block">Ver catálogo</a>
+                </div>
+            {% endif %}
         </div>
-        {% else %}
-        <div class="text-center py-5 card-morde rounded-4 border-secondary">
-            <i class="bi bi-cart-x fs-1 text-muted"></i>
-            <h4 class="mt-3 text-secondary">No has agregado nada al carrito</h4>
-            <a href="{% url 'lista_productos' %}" class="btn btn-info mt-3 text-dark fw-bold">Ver Catálogo</a>
-        </div>
-        {% endif %}
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

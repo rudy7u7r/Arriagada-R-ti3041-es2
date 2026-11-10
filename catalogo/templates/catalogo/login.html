@@ -2,44 +2,401 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Iniciar Sesión - La Ferretería Ornn</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar sesión - La Ferretería Ornn</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <style>
-        body { background-color: #0f141a; color: #e1e6eb; font-family: 'Segoe UI', sans-serif; }
-        .card-custom { background-color: #1a222d; border: 1px solid #00e5ff; }
+        :root {
+            --morde-bg: #0b0908;
+            --morde-bg-2: #17110d;
+            --morde-panel: rgba(20, 15, 11, 0.9);
+            --morde-panel-2: rgba(12, 9, 7, 0.96);
+            --morde-line: rgba(255, 189, 93, 0.22);
+            --morde-green: #f0b36a;
+            --morde-green-2: #d6903d;
+            --morde-green-3: #a75f1e;
+            --morde-emerald: #3d2410;
+            --morde-text: #f6ead9;
+            --morde-muted: #d7c2a2;
+            --morde-gold: #f5d08b;
+            --morde-shadow: rgba(255, 156, 64, 0.24);
+        }
+
+        * { box-sizing: border-box; }
+
+        html, body {
+            margin: 0;
+            min-height: 100%;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background:
+                radial-gradient(circle at top, rgba(223, 142, 62, 0.14), transparent 24%),
+                linear-gradient(180deg, #0a0908 0%, #17110d 42%, #0a0908 100%);
+            color: var(--morde-text);
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px);
+            background-size: 30px 30px;
+            mask-image: radial-gradient(circle at center, black 48%, transparent 100%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        a { text-decoration: none; }
+
+        .page-shell { position: relative; z-index: 1; }
+
+        .navbar-mordekaiser {
+            position: sticky;
+            top: 0;
+            z-index: 40;
+            background: rgba(12, 9, 7, 0.74);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            backdrop-filter: blur(14px);
+            box-shadow: 0 12px 28px rgba(0,0,0,0.18);
+        }
+
+        .navbar-mordekaiser::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: -2px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--morde-green), var(--morde-green-3), var(--morde-green), transparent);
+            background-size: 220% 100%;
+            animation: glowLine 6s linear infinite;
+        }
+
+        @keyframes glowLine {
+            0% { background-position: 0% 0%; }
+            100% { background-position: 200% 0%; }
+        }
+
+        .brand-wrap {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            color: var(--morde-text);
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            font-size: 0.78rem;
+        }
+
+        .brand-mark {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #1d120a, #3d2410 40%, #1d120a 100%);
+            border: 1px solid rgba(240,179,106,0.30);
+            position: relative;
+            box-shadow: inset 0 0 18px rgba(214, 144, 61, 0.1), 0 0 20px rgba(214, 144, 61, 0.18);
+        }
+
+        .brand-mark::before,
+        .brand-mark::after {
+            content: "";
+            position: absolute;
+            inset: 8px;
+            border: 2px solid var(--morde-green);
+            border-top-color: transparent;
+            border-radius: 50%;
+            transform: rotate(18deg);
+        }
+
+        .brand-mark::after {
+            inset: 14px;
+            border-width: 2px;
+            border-left-color: transparent;
+            border-bottom-color: transparent;
+            transform: rotate(-25deg);
+        }
+
+        .brand-name {
+            font-weight: 800;
+            color: var(--morde-text);
+            letter-spacing: 0.08em;
+            text-shadow: 0 0 18px rgba(140,255,176,0.2);
+        }
+
+        .brand-name span {
+            color: var(--morde-green);
+        }
+
+        .top-nav-links {
+            display: flex;
+            align-items: center;
+            gap: 1.8rem;
+            padding: 0 1rem;
+            margin: 0 auto;
+            list-style: none;
+        }
+
+        .top-nav-links a {
+            color: rgba(255,255,255,0.78);
+            text-transform: uppercase;
+            letter-spacing: 0.14em;
+            font-size: 0.7rem;
+            font-weight: 700;
+            transition: color 0.2s ease;
+        }
+
+        .top-nav-links a:hover {
+            color: var(--morde-green);
+        }
+
+        .top-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .mini-pill {
+            color: var(--morde-text);
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(240,179,106,0.22);
+            border-radius: 999px;
+            padding: 0.58rem 0.9rem;
+            font-size: 0.72rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            transition: 0.25s ease;
+        }
+
+        .mini-pill:hover {
+            border-color: rgba(240,179,106,0.65);
+            box-shadow: 0 0 18px rgba(214,144,61,0.18);
+            color: var(--morde-green);
+        }
+
+        .btn-morde-primary {
+            background: linear-gradient(135deg, var(--morde-green-3), var(--morde-green));
+            color: #170d07;
+            border: none;
+            border-radius: 999px;
+            padding: 0.76rem 1.3rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            box-shadow: 0 10px 28px rgba(214,144,61,0.22);
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .btn-morde-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 18px 32px rgba(214,144,61,0.28);
+            color: #170d07;
+        }
+
+        .auth-shell {
+            min-height: calc(100vh - 90px);
+            display: grid;
+            place-items: center;
+            padding: 40px 16px;
+        }
+
+        .auth-card {
+            position: relative;
+            width: min(100%, 520px);
+            background: rgba(16, 12, 9, 0.82);
+            border: 1px solid rgba(245, 208, 139, 0.28);
+            border-radius: 28px;
+            box-shadow: 0 28px 60px rgba(0,0,0,0.35), inset 0 0 24px rgba(245,208,139,0.08);
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .auth-card::before {
+            content: "";
+            position: absolute;
+            inset: 1px;
+            border-radius: 27px;
+            border: 1px solid rgba(255,255,255,0.04);
+            pointer-events: none;
+        }
+
+        .auth-kicker {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.45rem 0.7rem;
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 0.18em;
+            color: var(--morde-gold);
+            border: 1px solid rgba(245,208,139,0.3);
+            border-radius: 999px;
+            background: rgba(255,255,255,0.02);
+            margin-bottom: 1.2rem;
+        }
+
+        h1, h2, h3, h4, h5 {
+            margin: 0;
+        }
+
+        .auth-title {
+            font-weight: 800;
+            font-size: clamp(2rem, 3vw, 2.5rem);
+            letter-spacing: -0.04em;
+            color: var(--morde-text);
+            margin-bottom: 1.5rem;
+        }
+
+        .auth-title span {
+            color: var(--morde-green);
+        }
+
+        .auth-form .form-group,
+        .auth-form .mb-3 {
+            margin-bottom: 1.15rem;
+        }
+
+        .auth-form label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--morde-gold);
+            font-weight: 700;
+            letter-spacing: 0.04em;
+        }
+
+        .auth-form input,
+        .auth-form textarea,
+        .auth-form select {
+            width: 100%;
+            border: 1px solid rgba(245,208,139,0.27);
+            background: rgba(255,255,255,0.02);
+            color: var(--morde-text);
+            border-radius: 14px;
+            padding: 0.9rem 1rem;
+            outline: none;
+            transition: all 0.25s ease;
+        }
+
+        .auth-form input:focus,
+        .auth-form textarea:focus,
+        .auth-form select:focus {
+            border-color: rgba(240,179,106,0.8);
+            box-shadow: 0 0 0 0.18rem rgba(240,179,106,0.15);
+            background: rgba(255,255,255,0.03);
+        }
+
+        .auth-form input::placeholder {
+            color: rgba(246,234,217,0.42);
+        }
+
+        .btn-auth {
+            width: 100%;
+            border: none;
+            border-radius: 16px;
+            padding: 0.9rem 1.2rem;
+            background: linear-gradient(135deg, var(--morde-green-3), var(--morde-green));
+            color: #170d07;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            box-shadow: 0 12px 28px rgba(214,144,61,0.22);
+            transition: 0.25s ease;
+        }
+
+        .btn-auth:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 18px 32px rgba(214,144,61,0.26);
+        }
+
+        .auth-extra {
+            margin-top: 1.25rem;
+            text-align: center;
+            color: rgba(255,255,255,0.76);
+            font-size: 0.92rem;
+        }
+
+        .auth-extra a {
+            color: var(--morde-gold);
+            font-weight: 700;
+        }
+
+        .auth-extra a:hover {
+            color: var(--morde-green);
+        }
+
+        .alert {
+            border-radius: 14px;
+            border: 1px solid rgba(245,208,139,0.25);
+            background: rgba(255,255,255,0.03);
+            color: var(--morde-text);
+        }
+
+        .text-danger {
+            color: #ff9f9f !important;
+        }
+
+        @media (max-width: 768px) {
+            .top-nav-links {
+                display: none;
+            }
+            .auth-card {
+                padding: 1.3rem;
+            }
+        }
     </style>
 </head>
-<body class="d-flex align-items-center vh-100">
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-5">
-                <div class="card card-custom p-4 shadow-lg">
-                    <h3 class="text-center text-info fw-bold mb-4"><i class="bi bi-shield-lock me-2"></i>Iniciar Sesión</h3>
-                    
-                    {% if messages %}
-                        {% for message in messages %}
-                            <div class="alert alert-{{ message.tags }} text-center py-2">{{ message }}</div>
-                        {% endfor %}
-                    {% endif %}
+<body>
+    <div class="page-shell">
+        <nav class="navbar navbar-expand-lg navbar-mordekaiser">
+            <div class="container">
+                <a class="navbar-brand brand-wrap" href="{% url 'lista_productos' %}">
+                    <span class="brand-mark" aria-hidden="true"></span>
+                    <span class="brand-name">La Ferretería <span>Ornn</span></span>
+                </a>
 
-                    <form method="POST">
-                        {% csrf_token %}
-                        <div class="mb-3">
-                            <label class="form-label text-info">Nombre de usuario</label>
-                            <input type="text" name="username" class="form-control bg-dark text-light border-secondary" placeholder="Ingresa tu usuario" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label text-info">Contraseña</label>
-                            <input type="password" name="password" class="form-control bg-dark text-light border-secondary" placeholder="Ingresa tu contraseña" required>
-                        </div>
-                        <button type="submit" class="btn btn-info w-100 fw-bold mt-3 text-dark">Ingresar</button>
-                    </form>
+                <ul class="top-nav-links d-none d-lg-flex">
+                    <li><a href="{% url 'lista_productos' %}">Catálogo</a></li>
+                    <li><a href="{% url 'ver_carrito' %}">Carrito</a></li>
+                    <li><a href="{% url 'login' %}">Iniciar sesión</a></li>
+                    <li><a href="{% url 'register' %}">Registro</a></li>
+                </ul>
 
-                    <div class="text-center mt-3">
-                        <small>¿No tienes cuenta? <a href="{% url 'register' %}" class="text-info">Regístrate aquí</a></small><br>
-                        <small><a href="{% url 'lista_productos' %}" class="text-secondary mt-2 d-inline-block">Volver a la tienda</a></small>
+                <div class="top-actions">
+                    <a href="{% url 'login' %}" class="mini-pill">Entrar</a>
+                    <a href="{% url 'register' %}" class="btn-morde-primary">Crear cuenta</a>
+                </div>
+            </div>
+        </nav>
+
+        <div class="auth-shell">
+            <div class="auth-card">
+                <div class="auth-kicker"><i class="bi bi-shield-lock me-2"></i>Acceso seguro</div>
+                <h1 class="auth-title">Iniciar <span>sesión</span></h1>
+
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} text-center py-2 mb-3">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+
+                <form method="POST" class="auth-form">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="username">Nombre de usuario</label>
+                        <input id="username" type="text" name="username" placeholder="Ingresa tu usuario" required>
                     </div>
+                    <div class="mb-3">
+                        <label for="password">Contraseña</label>
+                        <input id="password" type="password" name="password" placeholder="Ingresa tu contraseña" required>
+                    </div>
+                    <button type="submit" class="btn-auth">Ingresar</button>
+                </form>
+
+                <div class="auth-extra">
+                    <span>¿No tienes cuenta? <a href="{% url 'register' %}">Regístrate aquí</a></span><br>
+                    <small><a href="{% url 'lista_productos' %}">Volver a la tienda</a></small>
                 </div>
             </div>
         </div>

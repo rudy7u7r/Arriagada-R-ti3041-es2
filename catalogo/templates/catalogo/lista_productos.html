@@ -764,6 +764,11 @@
                 <div class="top-actions ms-auto">
                     {% if user.is_authenticated %}
                         <span class="mini-pill"><i class="bi bi-person-circle me-1"></i>{{ user.username }}</span>
+                        {% if user.is_staff %}
+                            <a href="{% url 'admin_panel' %}" class="btn btn-morde-secondary btn-sm">
+                                <i class="bi bi-gear me-1"></i>Admin
+                            </a>
+                        {% endif %}
                         <a href="{% url 'ver_carrito' %}" class="btn btn-morde-secondary position-relative">
                             <i class="bi bi-cart3 me-1"></i> Carrito
                             {% if total_items_carrito > 0 %}
@@ -864,7 +869,11 @@
                     <article class="product-card">
                         <div class="product-image-wrap">
                             <span class="badge-category">{{ producto.categoria }}</span>
-                            <img src="{% static producto.imagen %}" class="product-image" alt="{{ producto.nombre }}" onerror="this.src='https://images.unsplash.com/photo-1581092921461-eab62e97a780?auto=format&fit=crop&w=900&q=80'">
+                            {% if producto.imagen|slice:':4' == 'http' or producto.imagen|slice:':7' == '/media/' or producto.imagen|slice:':1' == '/' %}
+                                <img src="{{ producto.imagen }}" class="product-image" alt="{{ producto.nombre }}" onerror="this.src='https://images.unsplash.com/photo-1581092921461-eab62e97a780?auto=format&fit=crop&w=900&q=80'">
+                            {% else %}
+                                <img src="{% static producto.imagen %}" class="product-image" alt="{{ producto.nombre }}" onerror="this.src='https://images.unsplash.com/photo-1581092921461-eab62e97a780?auto=format&fit=crop&w=900&q=80'">
+                            {% endif %}
                         </div>
 
                         <div class="product-body">
