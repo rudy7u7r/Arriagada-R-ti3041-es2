@@ -1,0 +1,14 @@
+<header class="category-banner">
+    <div class="category-banner-icon" aria-hidden="true">
+        <i class="bi {{ seccion.icono }}"></i>
+    </div>
+    <div>
+        <span class="category-banner-kicker">Guía de categoría</span>
+        <h3 id="{{ seccion.slug }}-title">{{ seccion.nombre }}</h3>
+        <p>{{ seccion.resumen }}</p>
+        <p class="category-use"><strong>¿Para qué sirve?</strong> {{ seccion.uso }}</p>
+    </div>
+    <a class="category-banner-link" href="#productos-{{ seccion.slug }}">
+        Ver productos <i class="bi bi-arrow-down-short"></i>
+    </a>
+</header>

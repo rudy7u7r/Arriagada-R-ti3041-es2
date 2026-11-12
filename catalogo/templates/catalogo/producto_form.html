@@ -71,8 +71,12 @@
                 <div class="mb-3">
                     <label for="{{ field.id_for_label }}">{{ field.label }}</label>
                     {{ field }}
-                    {% if field.name == 'imagen' %}
-                        <div class="info-note">Puedes usar una URL o dejar la ruta actual. También puedes subir un archivo.</div>
+                    {% if field.name == 'imagen_url' %}
+                        <div class="info-note">Pega la URL directa de la imagen. Si también subes un archivo, se guardará el archivo.</div>
+                    {% elif field.name == 'imagen_archivo' %}
+                        <div class="info-note">Elige una imagen de tu equipo; se guardará en la carpeta media del proyecto.</div>
+                    {% elif field.name == 'imagen' %}
+                        <div class="info-note">Ruta o URL de imagen actual. Déjala vacía si usarás una URL o subirás un archivo.</div>
                     {% endif %}
                     {% if field.errors %}
                         <div class="text-danger small mt-1">{{ field.errors|join:', ' }}</div>

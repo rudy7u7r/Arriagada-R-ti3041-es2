@@ -1,0 +1,74 @@
+<dialog class="account-dialog" id="accountDialog" aria-labelledby="accountDialogTitle" {% if auth_modal_open %}open{% endif %}>
+    <div class="account-dialog-inner">
+        <div class="account-dialog-header">
+            <div>
+                <span class="account-dialog-kicker">La Ferretería Ornn</span>
+                <h2 class="account-dialog-title" id="accountDialogTitle">Tu cuenta</h2>
+            </div>
+            <button type="button" class="account-dialog-close" data-dialog-close aria-label="Cerrar ventana">
+                <i class="bi bi-x-lg" aria-hidden="true"></i>
+            </button>
+        </div>
+
+        <div class="account-tabs" role="tablist" aria-label="Acceso a tu cuenta">
+            <button type="button" class="account-tab" id="account-login-tab" role="tab" aria-controls="account-login-panel" aria-selected="true" data-auth-tab="login">Iniciar sesión</button>
+            <button type="button" class="account-tab" id="account-register-tab" role="tab" aria-controls="account-register-panel" aria-selected="false" data-auth-tab="register">Crear cuenta</button>
+        </div>
+
+        <section id="account-login-panel" role="tabpanel" aria-labelledby="account-login-tab" data-auth-panel="login">
+            <form method="POST" class="account-form">
+                {% csrf_token %}
+                <input type="hidden" name="auth_action" value="login">
+                <div>
+                    <label for="{{ auth_login_form.username.id_for_label }}">Nombre de usuario</label>
+                    {{ auth_login_form.username }}
+                    {% for error in auth_login_form.username.errors %}
+                        <p class="field-error">{{ error }}</p>
+                    {% endfor %}
+                </div>
+                <div>
+                    <label for="{{ auth_login_form.password.id_for_label }}">Contraseña</label>
+                    {{ auth_login_form.password }}
+                    {% for error in auth_login_form.password.errors %}
+                        <p class="field-error">{{ error }}</p>
+                    {% endfor %}
+                </div>
+                {% for error in auth_login_form.non_field_errors %}
+                    <p class="field-error">{{ error }}</p>
+                {% endfor %}
+                <button type="submit" class="btn btn-morde-primary account-submit">Iniciar sesión</button>
+            </form>
+            <p class="account-switch-copy">¿No tienes cuenta? <button type="button" data-auth-switch="register">Crear cuenta</button></p>
+        </section>
+
+        <section id="account-register-panel" role="tabpanel" aria-labelledby="account-register-tab" data-auth-panel="register" hidden>
+            <form method="POST" class="account-form">
+                {% csrf_token %}
+                <input type="hidden" name="auth_action" value="register">
+                <div>
+                    <label for="{{ auth_register_form.username.id_for_label }}">Nombre de usuario</label>
+                    {{ auth_register_form.username }}
+                    {% for error in auth_register_form.username.errors %}
+                        <p class="field-error">{{ error }}</p>
+                    {% endfor %}
+                </div>
+                <div>
+                    <label for="{{ auth_register_form.password.id_for_label }}">Contraseña</label>
+                    {{ auth_register_form.password }}
+                    {% for error in auth_register_form.password.errors %}
+                        <p class="field-error">{{ error }}</p>
+                    {% endfor %}
+                </div>
+                <div>
+                    <label for="{{ auth_register_form.confirm_password.id_for_label }}">Confirmar contraseña</label>
+                    {{ auth_register_form.confirm_password }}
+                    {% for error in auth_register_form.confirm_password.errors %}
+                        <p class="field-error">{{ error }}</p>
+                    {% endfor %}
+                </div>
+                <button type="submit" class="btn btn-morde-primary account-submit">Crear cuenta</button>
+            </form>
+            <p class="account-switch-copy">¿Ya tienes cuenta? <button type="button" data-auth-switch="login">Iniciar sesión</button></p>
+        </section>
+    </div>
+</dialog>

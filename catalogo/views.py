@@ -1,3 +1,5 @@
+from functools import wraps
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth import login, logout, authenticate
@@ -6,10 +8,61 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django import forms
 from django.contrib.auth.models import User
 from django.db import DatabaseError
+from django.db.models import Count, Q, Sum
 from django.db.utils import OperationalError
+from django.utils.text import slugify
 from .models import Producto
 from django.conf import settings
 from django.core.files.storage import default_storage
+
+
+CATEGORIAS_CATALOGO = {
+    'Herramientas Eléctricas': {
+        'icono': 'bi-lightning-charge',
+        'resumen': 'Potencia y velocidad para avanzar en trabajos exigentes.',
+        'uso': 'Ideales para perforar, cortar, lijar y atornillar con menos esfuerzo en obras y proyectos de renovación.',
+    },
+    'Herramientas Manuales': {
+        'icono': 'bi-tools',
+        'resumen': 'Control y precisión para los detalles de cada proyecto.',
+        'uso': 'Úsalas para ajustar, sujetar, cortar y dar terminaciones con precisión en reparaciones y trabajos de carpintería.',
+    },
+    'Medición': {
+        'icono': 'bi-rulers',
+        'resumen': 'Mide y nivela antes de cada corte o instalación.',
+        'uso': 'Permiten tomar medidas, comprobar niveles y marcar referencias para lograr instalaciones y cortes exactos.',
+    },
+    'Fijaciones': {
+        'icono': 'bi-nut',
+        'resumen': 'Uniones firmes para montajes que deben durar.',
+        'uso': 'Clavos, tarugos y tornillos para fijar piezas de madera y asegurar montajes en distintos materiales.',
+    },
+    'Electricidad': {
+        'icono': 'bi-plug',
+        'resumen': 'Insumos prácticos para reparaciones eléctricas.',
+        'uso': 'Productos para aislar y proteger conexiones durante trabajos de instalación y mantenimiento eléctrico.',
+    },
+    'Adhesivos': {
+        'icono': 'bi-droplet',
+        'resumen': 'Adhiere, sella y rellena según la necesidad del trabajo.',
+        'uso': 'Soluciones para pegar materiales, sellar juntas y rellenar espacios en reparaciones y terminaciones.',
+    },
+    'Pintura': {
+        'icono': 'bi-paint-bucket',
+        'resumen': 'Prepara y renueva superficies con un acabado uniforme.',
+        'uso': 'Brochas, rodillos y accesorios para aplicar pintura, proteger superficies y conseguir terminaciones prolijas.',
+    },
+    'Seguridad': {
+        'icono': 'bi-shield-check',
+        'resumen': 'Protección personal para trabajar con mayor seguridad.',
+        'uso': 'Elementos de protección para reducir la exposición a polvo, impactos y riesgos comunes del trabajo.',
+    },
+    'Almacenamiento': {
+        'icono': 'bi-box-seam',
+        'resumen': 'Mantén tus herramientas e insumos ordenados y protegidos.',
+        'uso': 'Cajas y organizadores para guardar herramientas, separar fijaciones y encontrar cada pieza rápidamente.',
+    },
+}
 
 
 class ProductoForm(forms.ModelForm):
@@ -63,6 +116,17 @@ def staff_required(view_func):
     return decorated
 
 
+def customer_required(view_func):
+    @wraps(view_func)
+    def wrapped_view(request, *args, **kwargs):
+        if request.user.is_staff:
+            messages.info(request, 'El carrito solo está disponible para cuentas de cliente.')
+            return redirect('admin_panel')
+        return view_func(request, *args, **kwargs)
+
+    return login_required(login_url='login')(wrapped_view)
+
+
 def _safe_db_call(request, callback, fallback=None, message='No se pudo acceder a la base de datos. Inténtalo más tarde.'):
     try:
         return callback()
@@ -92,6 +156,11 @@ class RegistroSencilloForm(forms.ModelForm):
         return cleaned_data
 
 
+class InicioSesionForm(AuthenticationForm):
+    error_messages = AuthenticationForm.error_messages.copy()
+    error_messages['invalid_login'] = 'Nombre de usuario o contraseña incorrectos.'
+
+
 # --- VISTAS DE AUTENTICACIÓN ---
 
 def register_view(request):
@@ -117,7 +186,7 @@ def login_view(request):
     if request.user.is_authenticated:
         return redirect('lista_productos')
     if request.method == 'POST':
-        form = AuthenticationForm(request, data=request.POST)
+        form = InicioSesionForm(request, data=request.POST)
         if form.is_valid():
             user = form.get_user()
             login(request, user)
@@ -126,7 +195,7 @@ def login_view(request):
         else:
             messages.error(request, 'Nombre de usuario o contraseña incorrectos.')
     else:
-        form = AuthenticationForm()
+        form = InicioSesionForm()
     return render(request, 'catalogo/login.html', {'form': form})
 
 def logout_view(request):
@@ -138,43 +207,149 @@ def logout_view(request):
 # --- VISTAS DEL CATÁLOGO Y CARRITO ---
 
 def lista_productos(request):
-    productos = _safe_db_call(
+    auth_mode = ''
+    auth_login_form = InicioSesionForm(request, prefix='login')
+    auth_register_form = RegistroSencilloForm(prefix='register')
+    if request.method == 'POST' and not request.user.is_authenticated:
+        auth_mode = request.POST.get('auth_action', '')
+        if auth_mode == 'login':
+            auth_login_form = InicioSesionForm(request, data=request.POST, prefix='login')
+            if auth_login_form.is_valid():
+                user = auth_login_form.get_user()
+                login(request, user)
+                messages.success(request, f'Sesión iniciada correctamente. ¡Hola, {user.username}!')
+                return redirect(request.get_full_path())
+        elif auth_mode == 'register':
+            auth_register_form = RegistroSencilloForm(request.POST, prefix='register')
+            if auth_register_form.is_valid():
+                user = User.objects.create_user(
+                    username=auth_register_form.cleaned_data['username'],
+                    password=auth_register_form.cleaned_data['password'],
+                )
+                login(request, user)
+                messages.success(request, f'¡Cuenta creada con éxito! Bienvenido, {user.username}.')
+                return redirect(request.get_full_path())
+        else:
+            return redirect('lista_productos')
+
+    todos_productos = _safe_db_call(
         request,
-        lambda: Producto.objects.all(),
+        lambda: list(Producto.objects.all().order_by('categoria', 'nombre')),
         fallback=[],
         message='No se pudo cargar el catálogo porque la base de datos no está disponible.'
     )
 
+    categorias = sorted({producto.categoria for producto in todos_productos})
+    productos = todos_productos
     query_nombre = request.GET.get('q', '')
     categoria_filtro = request.GET.get('categoria', '')
+    orden_actual = request.GET.get('orden', 'relevancia')
+    if orden_actual not in {'relevancia', 'precio_asc', 'precio_desc', 'nombre'}:
+        orden_actual = 'relevancia'
 
     if query_nombre:
-        productos = productos.filter(nombre__icontains=query_nombre)
+        nombre_buscado = query_nombre.casefold()
+        productos = [
+            producto for producto in productos
+            if nombre_buscado in producto.nombre.casefold()
+        ]
 
     if categoria_filtro:
-        productos = productos.filter(categoria=categoria_filtro)
+        productos = [
+            producto for producto in productos
+            if producto.categoria == categoria_filtro
+        ]
 
-    categorias = _safe_db_call(
-        request,
-        lambda: Producto.objects.values_list('categoria', flat=True).distinct(),
-        fallback=[],
-        message='No se pudieron cargar las categorías.'
-    )
+    if orden_actual == 'precio_asc':
+        productos.sort(key=lambda producto: (producto.precio, producto.nombre.casefold()))
+    elif orden_actual == 'precio_desc':
+        productos.sort(key=lambda producto: (-producto.precio, producto.nombre.casefold()))
+    elif orden_actual == 'nombre':
+        productos.sort(key=lambda producto: producto.nombre.casefold())
+
+    categorias_conteo = [
+        {
+            'nombre': categoria,
+            'cantidad': sum(
+                producto.categoria == categoria
+                for producto in todos_productos
+            ),
+            'icono': CATEGORIAS_CATALOGO.get(
+                categoria,
+                {'icono': 'bi-tools'},
+            )['icono'],
+        }
+        for categoria in categorias
+    ]
+
+    productos_por_categoria = {}
+    for producto in productos:
+        productos_por_categoria.setdefault(producto.categoria, []).append(producto)
+
+    if orden_actual != 'relevancia':
+        categoria_seccion = categoria_filtro or 'Productos ordenados'
+        detalles = CATEGORIAS_CATALOGO.get(categoria_filtro, {
+            'icono': 'bi-sort-down',
+            'resumen': 'Explora el catálogo ordenado según tu preferencia.',
+            'uso': 'Compara precios y productos para elegir lo que mejor se ajuste a tu proyecto.',
+        })
+        secciones_catalogo = [{
+            'nombre': categoria_seccion,
+            'slug': 'productos-ordenados',
+            'icono': detalles['icono'],
+            'resumen': detalles['resumen'],
+            'uso': detalles['uso'],
+            'productos': productos,
+        }]
+    else:
+        categorias_ordenadas = sorted(
+            productos_por_categoria,
+            key=lambda categoria: (
+                categoria not in CATEGORIAS_CATALOGO,
+                list(CATEGORIAS_CATALOGO).index(categoria)
+                if categoria in CATEGORIAS_CATALOGO
+                else categoria.casefold(),
+            ),
+        )
+        secciones_catalogo = []
+        for indice, categoria in enumerate(categorias_ordenadas, start=1):
+            detalles = CATEGORIAS_CATALOGO.get(categoria, {
+                'icono': 'bi-tools',
+                'resumen': f'Productos y materiales de {categoria}.',
+                'uso': 'Encuentra insumos y herramientas para tus tareas de construcción, reparación y mantenimiento.',
+            })
+            secciones_catalogo.append({
+                'nombre': categoria,
+                'slug': slugify(categoria) or f'categoria-{indice}',
+                'icono': detalles['icono'],
+                'resumen': detalles['resumen'],
+                'uso': detalles['uso'],
+                'productos': productos_por_categoria[categoria],
+            })
 
     carrito = request.session.get('carrito', {})
     total_items_carrito = sum(carrito.values())
 
     context = {
-        'productos': productos,
+        'secciones_catalogo': secciones_catalogo,
         'categorias': categorias,
+        'categorias_conteo': categorias_conteo,
+        'categorias_menu': categorias_conteo,
+        'todos_productos_count': len(todos_productos),
         'query_nombre': query_nombre,
         'categoria_filtro': categoria_filtro,
+        'orden_actual': orden_actual,
+        'total_resultados': len(productos),
         'total_items_carrito': total_items_carrito,
+        'auth_login_form': auth_login_form,
+        'auth_register_form': auth_register_form,
+        'auth_mode': auth_mode,
+        'auth_modal_open': bool(auth_mode),
     }
 
     return render(request, 'catalogo/lista_productos.html', context)
 
-@login_required(login_url='login')
+@customer_required
 def agregar_al_carrito(request, producto_id):
     try:
         producto = get_object_or_404(Producto, id=producto_id)
@@ -200,7 +375,7 @@ def agregar_al_carrito(request, producto_id):
 
     return redirect('lista_productos')
 
-@login_required(login_url='login')
+@customer_required
 def ver_carrito(request):
     carrito = request.session.get('carrito', {})
     items = []
@@ -225,14 +400,14 @@ def ver_carrito(request):
     }
     return render(request, 'catalogo/carrito.html', context)
 
-@login_required(login_url='login')
+@customer_required
 def vaciar_carrito(request):
     if 'carrito' in request.session:
         del request.session['carrito']
         messages.info(request, 'El carrito ha sido vaciado.')
     return redirect('ver_carrito')
 
-@login_required(login_url='login')
+@customer_required
 def confirmar_compra(request):
     carrito = request.session.get('carrito', {})
     if not carrito:
@@ -260,7 +435,7 @@ def confirmar_compra(request):
     }
     return render(request, 'catalogo/confirmar_compra.html', context)
 
-@login_required(login_url='login')
+@customer_required
 def procesar_compra(request):
     if request.method == 'POST':
         carrito = request.session.get('carrito', {})
@@ -351,7 +526,7 @@ def productos_crud(request):
 @staff_required
 def producto_nuevo(request):
     if request.method == 'POST':
-        form = ProductoForm(request.POST)
+        form = ProductoForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
             messages.success(request, 'Producto creado correctamente.')
@@ -365,7 +540,7 @@ def producto_nuevo(request):
 def producto_editar(request, producto_id):
     producto = get_object_or_404(Producto, id=producto_id)
     if request.method == 'POST':
-        form = ProductoForm(request.POST, instance=producto)
+        form = ProductoForm(request.POST, request.FILES, instance=producto)
         if form.is_valid():
             form.save()
             messages.success(request, 'Producto actualizado correctamente.')
@@ -385,5 +560,25 @@ def producto_eliminar(request, producto_id):
 
 @user_passes_test(lambda u: u.is_active and u.is_staff)
 def admin_panel(request):
-    productos = Producto.objects.all().order_by('id')
-    return render(request, 'catalogo/admin_panel.html', {'productos': productos})
+    todos_productos = Producto.objects.all()
+    query = request.GET.get('q', '').strip()
+    productos = todos_productos.order_by('id')
+    if query:
+        productos = productos.filter(
+            Q(nombre__icontains=query) | Q(categoria__icontains=query)
+        )
+
+    estadisticas = todos_productos.aggregate(
+        total_stock=Sum('stock'),
+        total_categorias=Count('categoria', distinct=True),
+    )
+    context = {
+        'productos': productos,
+        'query': query,
+        'productos_encontrados': productos.count(),
+        'total_productos': todos_productos.count(),
+        'total_stock': estadisticas['total_stock'] or 0,
+        'total_categorias': estadisticas['total_categorias'] or 0,
+        'stock_bajo': todos_productos.filter(stock__lte=5).count(),
+    }
+    return render(request, 'catalogo/admin_panel.html', context)
